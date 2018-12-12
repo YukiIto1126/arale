@@ -1,3 +1,25 @@
+/* アニメーション */
+@keyframes Flash1{
+	0%{
+    opacity: 1;
+  }
+  40%{
+    opacity: 0.9;
+  }
+  50%{
+    opacity: 0;
+  }
+  60%{
+    opacity: 0.9;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+div.dataPanel{
+  animation: Flash1 2s ease infinite;
+}
+
 /*ドロップダウン*/
 div.styled-select.blue.semi-square{
 	border-radius: 15px;

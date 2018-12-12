@@ -1,6 +1,5 @@
 //クラス定義
 var ThreeDD = {};
-ThreeDD.data;
 ThreeDD.finished = false;
 ThreeDD.main = function(){
 	
@@ -32,9 +31,11 @@ ThreeDD.main = function(){
 	loadCss(MakePath("css/dashboard.css"));
 	
 	//画面リサイズで再実行されないように(暫定対応)
-	if(this.finished) return 
-	var _data = ThreeDD.data;
+	if(this.finished) return
 	
+	// 	データの作成
+	var _data = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];
+ 	
 	/////////////////////////
 	//関数
 	/////////////////////////
@@ -110,7 +111,7 @@ ThreeDD.main = function(){
 
 	function init() {
 		camera = new THREE.PerspectiveCamera(40, window.width/window.height , 1, 10000 *resolutionZoom);
-		camera.position.z = 3000 * resolutionZoom;
+		camera.position.z = 500 * resolutionZoom;
 		
 		isAnimateHand = true;
 		
@@ -137,66 +138,35 @@ ThreeDD.main = function(){
 		///////////////////////////////////////////////
 		scene2 = new THREE.Scene();
 		//ミニグラフのサイズ定義
-	    var width  = 230 * resolutionZoom,
-	        height = 160 * resolutionZoom;
+    var width  = 230 * resolutionZoom,
+        height = 160 * resolutionZoom;
 	        
 		//グラフ描画用のDIV生成
-	    elements = d3.selectAll('.element')
-	        .data(_data).enter()
-	        .append('div')
-	        //.attr('class', 'element')
-	        .attr('class', function(d){
-	        	if(d.hasOwnProperty("recs")) return 'element dataPanel';
-	        	else return 'element categoryPanel';
-	        })
-	        .attr('id', function(e, i){
-	        	return "divPanel" + i;
-	        })
-	        .style({
-		        "width":width + "px",
-		        "height": height + "px",
-		        "color": "rgba(145, 145, 145, 0.75)",
-						"background": function(e, i){
-								var image_index = Math.floor(Math.random() * 4);
-								return "url('/html/image/babo/sticker_"+image_index+".png')"
-						},
-						"background-attachment": "fixed",
-						"background-repeat": "no-repeat"
-					})
-	        .on('click', MoveCameraObject);
-	    
-	    //カテゴリパネル作成
-		$.each(_data, function(i, v){
-			if(!v.hasOwnProperty("recs")){
-				$("#divPanel" + i).append("<div class='categoryDiv'>"+ v.classification +"</div>");
-			}
-		});
-		//カテゴリパネルのデザイン調整
-		$(".categoryDiv").css({
-			"display":"table-cell",
-		    "height":height + "px",
-		    "line-height":height + "px",
-		    "width":width + "px",
-		    "vertical-align":"middle",
-		    "text-align":"center",
-		    "font-size":"48px",
-		    "color":"white",
-		});
-		
-		//グラフ用DIV
-	  elements.append('div')
-      .attr('class', function(e){
-      	if(e.hasOwnProperty("recs")) return "chartDiv"; 
-      	else return "";
-      })
-      .attr('id', function(e, i){
-      	return "divChart" + i;
-      })
-      .style('width', '100%')
-      .style('height', '90%')
-      .style('margin-top', '7%')
-      .style('margin-bottom', '3%');
-		
+    elements = d3.selectAll('.element')
+        .data(_data).enter()
+        .append('div')
+        .attr('class', 'element')
+        .attr('id', function(e, i){
+        	return "divPanel" + i;
+        })
+        .style({
+	        "width":width + "px",
+	        "height": height + "px",
+	        "color": "rgba(145, 145, 145, 0.75)",
+					"background": function(e, i){
+							var image_index = Math.floor(Math.random() * 4);
+							return "url('/html/image/babo/sticker_"+image_index+".png')"
+					},
+					"background-attachment": "fixed",
+					"background-repeat": "no-repeat",
+					"opacity": "0"
+/*
+					"animation": function(e, i){
+						return 'Flash1 2s ease infinite';
+					}
+*/
+				});
+	    		
 		//座標を設定
 		elements.each(SetPosition);
 		
@@ -214,6 +184,22 @@ ThreeDD.main = function(){
 		renderer2.domElement.style.position = 'absolute';
 		renderer2.domElement.style.top = 0;
 		document.getElementById('container').appendChild(renderer2.domElement);
+		
+		displayHiddenElements(true);
+	}
+	
+	function displayHiddenElements(isShow){
+		setTimeout(function(){
+			elements
+				.transition()
+				.duration(1000)
+				.delay(function(i,e){
+					return 500 + Math.random() * 3000;
+				})
+				.style('opacity', isShow?'1':'0');
+				
+			displayHiddenElements(!isShow)
+		}, 4000);
 	}
 
 	var isAnimateHand = false;
@@ -284,14 +270,8 @@ ThreeDD.main = function(){
 
 	function SetPosition(d, i) {
 		var vector, phi, theta;
-		
-		if(filterCategory){
-			dataCount = elements.filter(function(element, index, array) {
-				return (element.classification == filterCategory );
-			})[0].length;
-		}else{
-			dataCount = elements[0].length;
-		}
+
+		dataCount = elements[0].length;
 		
 		if(dataCount <= 4) borderInside.sphere = 180;
 		else if(dataCount <= 8) borderInside.sphere = 220;
@@ -319,105 +299,90 @@ ThreeDD.main = function(){
 		random.position.z = (Math.random() * 4000 - 2000)*resolutionZoom;
 		d['random'] = random;
 		
-		//フィルタ対象外は原点配置
-		if(filterCategory && filterCategory != d.classification){
-			var origin = {position:{x:0,y:0,z:0},rotation:{x:0,y:0,z:0}};
-			d['sphere'] = origin;
-			d['sphere_i'] = origin;
-			d['helix'] = origin;
-			d['helix_i'] = origin;
-			d['circle'] = origin;
-			d['straight'] = origin;
-			d['table'] = origin;
-			d['grid'] = origin;
-			filterCnt++;
-		}else{
-			
-			//天体_外向き
-			var sphere = new THREE.Object3D();
-			vector = new THREE.Vector3();
-			phi = Math.acos(-1 + ( 2 * (i-filterCnt) ) / (dataCount - 1));
-			theta = Math.sqrt(dataCount * Math.PI) * phi;
-			sphere.position.x = (borderInside.sphere * Math.cos(theta) * Math.sin(phi)) *resolutionZoom;
-			sphere.position.y = (borderInside.sphere * Math.sin(theta) * Math.sin(phi)) *resolutionZoom;
-			sphere.position.z = (borderInside.sphere * Math.cos(phi)) *resolutionZoom;
-			vector.copy(sphere.position).multiplyScalar(2);
-			sphere.lookAt(vector);
-			d['sphere'] = sphere;
-			
-			//天体_内向き
-			var sphere_i = new THREE.Object3D();
-			vector = new THREE.Vector3();
-			phi = Math.acos(-1 + ( 2 * (i-filterCnt) ) / (dataCount - 1));
-			theta = Math.sqrt(dataCount * Math.PI) * phi;
-			sphere_i.position.x = (borderInside.sphere * Math.cos(theta) * Math.sin(phi)) *resolutionZoom;
-			sphere_i.position.y = (borderInside.sphere * Math.sin(theta) * Math.sin(phi)) *resolutionZoom;
-			sphere_i.position.z = (borderInside.sphere * Math.cos(phi)) *resolutionZoom;
-			vector.copy(sphere_i.position).multiplyScalar(0.5);
-			sphere_i.lookAt(vector);
-			d['sphere_i'] = sphere_i;
-			
-			//螺旋_外向き
-			var helix = new THREE.Object3D();
-			vector = new THREE.Vector3();
-			phi = ((i-filterCnt) + 12) * borderInside.phi + Math.PI;
-			helix.position.x = (borderInside.helix * Math.sin(phi))*resolutionZoom;
-			helix.position.y = (- ((i-filterCnt) * 8) + (dataCount/25)*100)*resolutionZoom;
-			helix.position.z = (borderInside.helix * Math.cos(phi))*resolutionZoom;
-			vector.x = helix.position.x * 2 *resolutionZoom;
-			vector.y = helix.position.y *resolutionZoom;
-			vector.z = helix.position.z * 2 *resolutionZoom;
-			helix.lookAt(vector);
-			d['helix'] = helix;
-			
-			//螺旋_内向き
-			var helix_i = new THREE.Object3D();
-			vector = new THREE.Vector3();
-			phi = ((i-filterCnt) + 12) * borderInside.phi + Math.PI;
-			helix_i.position.x = (borderInside.helix * Math.sin(phi))*resolutionZoom;
-			helix_i.position.y = (- ((i-filterCnt) * 8) + (dataCount/25)*100)*resolutionZoom;
-			helix_i.position.z = (borderInside.helix * Math.cos(phi))*resolutionZoom;
-			vector.copy(helix_i.position).multiplyScalar(0.5)
-			helix_i.lookAt(vector);
-			d['helix_i'] = helix_i;
-			
-			//円形順列
-			var circle = new THREE.Object3D();
-			vector = new THREE.Vector3();
-			r = 40 * dataCount * resolutionZoom;
-			phi = 2 * (i-filterCnt)/dataCount * Math.PI;
-			phi_dash = (2 * (i-filterCnt)/dataCount +  0.25) * Math.PI;
-			circle.position.x = (r * Math.sin(phi))+(0.75 * r);
-			circle.position.y = 0;
-			circle.position.z = r * Math.cos(phi);
-			vector.x = Math.SQRT2 * r * Math.sin(phi_dash);
-			vector.y = 0;
-			vector.z = Math.SQRT2 * r * Math.cos(phi_dash);
-			circle.lookAt(vector);
-			d['circle'] = circle;
-			
-			//直列順列
-			var straight = new THREE.Object3D();
-			straight.position.x = 0;
-			straight.position.y = 0;
-			straight.position.z = (dataCount - (i-filterCnt))*straightLength - (dataCount/2 * straightLength);
-			d['straight'] = straight;
-			
-			//マトリックス表示
-			var grid = new THREE.Object3D();
-			grid.position.x = ((( (i-filterCnt) % 5 ) * 400) - 800)*resolutionZoom ;
-			grid.position.y = (( - ( Math.floor( (i-filterCnt) / 5 ) % 5 ) * 400 ) + 800)*resolutionZoom ;
-			grid.position.z = ((Math.floor( (i-filterCnt) / 25 )) * 1000 - 2000)*resolutionZoom ;
-			d['grid'] = grid;
-			
-			//表形式表示
-			var table = new THREE.Object3D();
-			var sqrt =  Math.ceil(Math.sqrt(dataCount));
-			table.position.x = ((((i-filterCnt) % sqrt ) * 300) - (150 * sqrt))*resolutionZoom + 450;
-			table.position.y = (( - ( Math.floor( (i-filterCnt) / sqrt ) % sqrt ) * 200 ) + (100 * sqrt))*resolutionZoom - 300;
-			table.position.z = 2000;
-			d['table'] = table;
-		}
+		//天体_外向き
+		var sphere = new THREE.Object3D();
+		vector = new THREE.Vector3();
+		phi = Math.acos(-1 + ( 2 * (i-filterCnt) ) / (dataCount - 1));
+		theta = Math.sqrt(dataCount * Math.PI) * phi;
+		sphere.position.x = (borderInside.sphere * Math.cos(theta) * Math.sin(phi)) *resolutionZoom;
+		sphere.position.y = (borderInside.sphere * Math.sin(theta) * Math.sin(phi)) *resolutionZoom;
+		sphere.position.z = (borderInside.sphere * Math.cos(phi)) *resolutionZoom;
+		vector.copy(sphere.position).multiplyScalar(2);
+		sphere.lookAt(vector);
+		d['sphere'] = sphere;
+		
+		//天体_内向き
+		var sphere_i = new THREE.Object3D();
+		vector = new THREE.Vector3();
+		phi = Math.acos(-1 + ( 2 * (i-filterCnt) ) / (dataCount - 1));
+		theta = Math.sqrt(dataCount * Math.PI) * phi;
+		sphere_i.position.x = (borderInside.sphere * Math.cos(theta) * Math.sin(phi)) *resolutionZoom;
+		sphere_i.position.y = (borderInside.sphere * Math.sin(theta) * Math.sin(phi)) *resolutionZoom;
+		sphere_i.position.z = (borderInside.sphere * Math.cos(phi)) *resolutionZoom;
+		vector.copy(sphere_i.position).multiplyScalar(0.5);
+		sphere_i.lookAt(vector);
+		d['sphere_i'] = sphere_i;
+		
+		//螺旋_外向き
+		var helix = new THREE.Object3D();
+		vector = new THREE.Vector3();
+		phi = ((i-filterCnt) + 12) * borderInside.phi + Math.PI;
+		helix.position.x = (borderInside.helix * Math.sin(phi))*resolutionZoom;
+		helix.position.y = (- ((i-filterCnt) * 8) + (dataCount/25)*100)*resolutionZoom;
+		helix.position.z = (borderInside.helix * Math.cos(phi))*resolutionZoom;
+		vector.x = helix.position.x * 2 *resolutionZoom;
+		vector.y = helix.position.y *resolutionZoom;
+		vector.z = helix.position.z * 2 *resolutionZoom;
+		helix.lookAt(vector);
+		d['helix'] = helix;
+		
+		//螺旋_内向き
+		var helix_i = new THREE.Object3D();
+		vector = new THREE.Vector3();
+		phi = ((i-filterCnt) + 12) * borderInside.phi + Math.PI;
+		helix_i.position.x = (borderInside.helix * Math.sin(phi))*resolutionZoom;
+		helix_i.position.y = (- ((i-filterCnt) * 8) + (dataCount/25)*100)*resolutionZoom;
+		helix_i.position.z = (borderInside.helix * Math.cos(phi))*resolutionZoom;
+		vector.copy(helix_i.position).multiplyScalar(0.5)
+		helix_i.lookAt(vector);
+		d['helix_i'] = helix_i;
+		
+		//円形順列
+		var circle = new THREE.Object3D();
+		vector = new THREE.Vector3();
+		r = 40 * dataCount * resolutionZoom;
+		phi = 2 * (i-filterCnt)/dataCount * Math.PI;
+		phi_dash = (2 * (i-filterCnt)/dataCount +  0.25) * Math.PI;
+		circle.position.x = (r * Math.sin(phi))+(0.75 * r);
+		circle.position.y = 0;
+		circle.position.z = r * Math.cos(phi);
+		vector.x = Math.SQRT2 * r * Math.sin(phi_dash);
+		vector.y = 0;
+		vector.z = Math.SQRT2 * r * Math.cos(phi_dash);
+		circle.lookAt(vector);
+		d['circle'] = circle;
+		
+		//直列順列
+		var straight = new THREE.Object3D();
+		straight.position.x = 0;
+		straight.position.y = 0;
+		straight.position.z = (dataCount - (i-filterCnt))*straightLength - (dataCount/2 * straightLength);
+		d['straight'] = straight;
+		
+		//マトリックス表示
+		var grid = new THREE.Object3D();
+		grid.position.x = ((( (i-filterCnt) % 5 ) * 400) - 800)*resolutionZoom ;
+		grid.position.y = (( - ( Math.floor( (i-filterCnt) / 5 ) % 5 ) * 400 ) + 800)*resolutionZoom ;
+		grid.position.z = ((Math.floor( (i-filterCnt) / 25 )) * 1000 - 2000)*resolutionZoom ;
+		d['grid'] = grid;
+		
+		//表形式表示
+		var table = new THREE.Object3D();
+		var sqrt =  Math.ceil(Math.sqrt(dataCount));
+		table.position.x = ((((i-filterCnt) % sqrt ) * 300) - (150 * sqrt))*resolutionZoom + 450;
+		table.position.y = (( - ( Math.floor( (i-filterCnt) / sqrt ) % sqrt ) * 200 ) + (100 * sqrt))*resolutionZoom - 300;
+		table.position.z = 2000;
+		d['table'] = table;
 	}
 	//パネル反転
 	function ReversalPanel(e, callback){
@@ -462,19 +427,10 @@ ThreeDD.main = function(){
 		//パネルの表示非表示制御
 		elements.style('display', 'block')
 			.transition().duration(duration)
-			.style('opacity', function(d){
-				if(filterCategory && filterCategory != d.classification) return 0;
-				else return 1;
-			})
 			.transition()
 			.duration(1)
 			.delay(duration)
-			.style('display', function(d){
-				if(filterCategory){
-					if(filterCategory != d.classification) return "none";
-					else return "block";
-				}
-			});
+			.style('display', "block");
 		
 		//パネルの移動
 		$.each(scene2.children, function(i, v){
@@ -520,7 +476,7 @@ ThreeDD.main = function(){
 			})
 			.start();
 	}
-	function MoveCameraObject(e){
+function MoveCameraObject(e){
 		//移動中はパネル反転中止
 		controls.removeEventListener('change', ReversalPanel);
 		
@@ -686,8 +642,11 @@ ThreeDD.main = function(){
 	  		clockAutoRotate.stop();
 	  		isAnimateAuto = false;
 	  		
-	  		controls.enabled = true;
-	  		controls.addEventListener('change', ReversalPanel);
+	  		if(!sp){
+		  		controls.enabled = true;
+					controls.addEventListener('change', ReversalPanel);	
+	  		}
+	  		
 			elements.on('click', MoveCameraObject);
 
 	  		isAnimateHand = true;
@@ -916,18 +875,17 @@ ThreeDD.main = function(){
 		var animationSpeed = 100000/movementSpeed;
 		var timeCount = dataCount;
 		if(filterCategory){
-			elements.filter(function(d) { return (d.classification == filterCategory);})
-			.transition().duration(animationSpeed)
-			.delay(function(d, i){
-				return i * straightLength / movementSpeed * 1000 + delayBase
-			})
-		    .style("opacity",  0)
-		    .transition()
-		    .delay(function(d, i){
-				return i * straightLength / movementSpeed * 1000 + delayBase + animationSpeed
-			})
+			elements.transition().duration(animationSpeed)
+				.delay(function(d, i){
+					return i * straightLength / movementSpeed * 1000 + delayBase
+				})
+			    .style("opacity",  0)
+			    .transition()
+			    .delay(function(d, i){
+					return i * straightLength / movementSpeed * 1000 + delayBase + animationSpeed
+				})
 		    .style("visibility",  "hidden");
-		    timeCount = elements.filter(function(d) { return (d.classification == filterCategory);})[0].length;
+		  timeCount = elements.length;
 		}else{
 			elements.transition().duration(animationSpeed)
 			.delay(function(d, i){
@@ -987,7 +945,7 @@ ThreeDD.main = function(){
 	var clockAutoRotate = new THREE.Clock(false);
 	var clockCircle = new THREE.Clock(false);
 	var clockFly = new THREE.Clock(false);
-	var autoRotate = false; //自動回転フラグ
+	var autoRotate = true; //自動回転フラグ
 	var oldTimeSeconds = 0;
 	var oldTimeCircle = 0;
 	var resolutionZoom = 2.5; //解像度
@@ -1065,7 +1023,7 @@ ThreeDD.main = function(){
 	if(GetUrlVars().displayStyle !== void(0)){
 		indexDisplayStyle = Number(GetUrlVars().displayStyle);
 	}
-	$("body").append('<div id="menuDisplay"><button>sphere</button><button>helix</button><button>grid</button><button>table</button><button>circle</button><button>straight</button></div>');
+	$("body").append('<div id="menuDisplay"><button>sphere</button><button>helix</button><button>grid</button><button>table</button><button>circle</button><button>straight</button><button>random</button></div>');
 	$("#menuDisplay button:nth-child("+ (indexDisplayStyle+1) +")").addClass("active");
 	displyStyle = hashDisplayStyle[indexDisplayStyle];
 	
@@ -1083,7 +1041,6 @@ ThreeDD.main = function(){
 	//データ調整
 	$.each(_data, function(i, v){
 		v.index = i;
-		v.realtimeSecond = v.realtimeSecond == "" ? 0 : Number(v.realtimeSecond);
 	});
 	dataCount = _data.length;
 	movementSpeed = 10000 / dataCount;
@@ -1164,27 +1121,6 @@ ThreeDD.main = function(){
 				v.chart.validateData();
 			}
 		});
-	});
-	
-	//カテゴリ再構成
-	$("body").append('<div class="styled-select blue semi-square"><select id="selectReconstruction"></select></div>');
-	$("#selectReconstruction").append('<option value="all">All Category</option>');
-	$.each(_data.map(function(i){ return i.classification}).filter(function (x, i, self) {return self.indexOf(x) === i;}), function(i, v){
-		$("#selectReconstruction").append('<option value="'+v+'">'+ v +'</option>');
-	});
-	$("#selectReconstruction").change(function(v){
-		filterCnt = 0;
-		if($("#selectReconstruction option:selected").get(0).textContent == "All Category"){
-			filterCategory = null;
-			elements.each(SetPosition);
-			Transform(displyStyle, 3000);
-		}else{
-			filterCategory = $("#selectReconstruction option:selected").get(0).textContent;
-			elements.each(SetPosition);
-			Transform(displyStyle, 3000);
-		}
-		if(displyStyle == "circle") MoveCamera({x:0,y:0,z:30*dataCount*resolutionZoom}, null, 3000);
-		if(displyStyle == "straight") ChangeControlsFly();
 	});
 	
 	//表示形式変更
@@ -1276,10 +1212,7 @@ ThreeDD.main = function(){
 				
 				if(preDisplayStyle == "straight") {
 					ChangeControlsOrbit();
-					elements.on('click', MoveCameraCircleObject);
 				}else{
-					elements.on("click", null);
-					elements.on("click", MoveCameraCircleObject);
 					var r = 40 * dataCount * resolutionZoom;
 					var distanca = Math.sqrt(r*r - (0.75*r)*(0.75*r)) + 1000;
 					MoveCamera({x:0,y:0, z:distanca}, null, 3000);
