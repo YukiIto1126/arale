@@ -7,8 +7,8 @@ div.styled-select.blue.semi-square{
     overflow: hidden;
     width: 240px;
     position: absolute;
-    top: 24px;
-    left: 84px;
+    top: 16px;
+    left: 16px;
 }
 #selectReconstruction{
 	color: #fff;
@@ -192,15 +192,6 @@ g.amcharts-category-axis text:first-child{
 }
 div.element a{
 	display:none!important;
-}
-div#container:before {
-    background-color: rgba(0,0,0,0.5);
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    content: ' ';
 }
 
 html, body {

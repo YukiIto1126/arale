@@ -98,20 +98,13 @@ ThreeDD.main = function(){
 	    if(obj.hasOwnProperty("style")) path.setAttribute("style", obj.style);
 	    return path;
 	}
-	
-	function SumHashArray(hash){
-	    var sum = 0;
-	    $.each(hash, function(i, v){
-	        sum =  sum + Number(v);
-	    });
-	    return sum
-	}
 
 	function init() {
 		camera = new THREE.PerspectiveCamera(40, window.width/window.height , 1, 10000 *resolutionZoom);
 		camera.position.z = 3000 * resolutionZoom;
 		
 		isAnimateHand = true;
+		
 		controls = new THREE.OrbitControls( camera );
 		controls.rotateSpeed = 0.1;
 		controls.zoomSpeed = 1.2;
@@ -146,10 +139,17 @@ ThreeDD.main = function(){
 	        .attr('id', function(e, i){
 	        	return "divPanel" + i;
 	        })
-	        .style("width",  width + "px")
-	        .style("height", height + "px")
-	        .style("color", "rgba(145, 145, 145, 0.75)")
-	        .style("background", "rgba(145, 145, 145, 0.75)")
+	        .style({
+		        "width":width + "px",
+		        "height": height + "px",
+		        "color": "rgba(145, 145, 145, 0.75)",
+						"background": function(e, i){
+								var image_index = Math.floor(Math.random() * 4);
+								return "url('/html/image/babo/sticker_"+image_index+".png')"
+						},
+						"background-attachment": "fixed",
+						"background-repeat": "no-repeat"
+					})
 	        .on('click', MoveCameraObject);
 	    
 	    //カテゴリパネル作成
@@ -171,34 +171,18 @@ ThreeDD.main = function(){
 		});
 		
 		//グラフ用DIV
-	    elements.append('div')
-	      .attr('class', function(e){
-	      	if(e.hasOwnProperty("recs")) return "chartDiv"; 
-	      	else return "";
-	      })
-	      .attr('id', function(e, i){
-	      	return "divChart" + i;
-	      })
-	      .style('width', '100%')
-	      .style('height', '90%')
-	      .style('margin-top', '7%')
-	      .style('margin-bottom', '3%');
-	    
-		//グラフ名用DIV
-	    elements.append('div')
-	      .attr('class', 'chartTitle')
-	      .html(function (d) {
-	      	if(d.hasOwnProperty("recs")) return d.name; 
-	      	else return "";
-	      });
-	      
-	      $("div.chartTitle")
-	      .css("font-size", Number($("div.chartTitle").css("font-size").slice(0,-2)) *resolutionZoom)
-	      .css("top", Number($("div.chartTitle").css("top").slice(0,-2)) *resolutionZoom)
-	      .css("left", Number($("div.chartTitle").css("left").slice(0,-2)) *resolutionZoom);
-		
-		//loading表示
-		$(".chartDiv").append("<div class='loadingGraphDiv' style='text-align:center; margin-top: 36%; font-size: 24px; color:rgba(256,256,256,0.5)'>Loading...<div>");
+	  elements.append('div')
+      .attr('class', function(e){
+      	if(e.hasOwnProperty("recs")) return "chartDiv"; 
+      	else return "";
+      })
+      .attr('id', function(e, i){
+      	return "divChart" + i;
+      })
+      .style('width', '100%')
+      .style('height', '90%')
+      .style('margin-top', '7%')
+      .style('margin-bottom', '3%');
 		
 		//座標を設定
 		elements.each(SetPosition);
@@ -462,7 +446,6 @@ ThreeDD.main = function(){
 			.transition().duration(duration)
 			.style('opacity', function(d){
 				if(filterCategory && filterCategory != d.classification) return 0;
-				else if ($("#inputSearch").get(0) && d.name.toLowerCase().indexOf($("#inputSearch").get(0).value.toLowerCase()) == -1) return 0.05;
 				else return 1;
 			})
 			.transition()
@@ -906,566 +889,8 @@ ThreeDD.main = function(){
         		"border": "2px solid " + borderColors[v.color],
         	});
         });
-        
-	    //グラフの設定
-	    $.ajax({
-		    type: 'GET',
-		    url: '/html/data/sample_data_graph.json',
-		    dataType: 'json',
-		    scriptCharset:'utf-8',
-		    async:false,
-		    error: function(XMLHttpRequest, textStatus, errorThrown){
-			    debugger;
-			  	console.log("aaa")  
-			  },
-		    success: function(json){
-		        if(json.data && json.data.length > 0) {
-		        	//Loading削除
-		        	$("#divChart" + i + " .loadingGraphDiv").remove();
-		        	
-			        //積上げ棒
-					if(v.hasOwnProperty("recs") && v.type=="column" ){
-						var graphSettings = {
-						  "type": "serial",
-						  "dataProvider": AmCharts.parseJSON(JSON.stringify(json.data)),
-						  "categoryField": "category",
-						  "autoMargins": false,
-						  "addClassNames": true,
-						  "classNamePrefix": "column",
-						  "marginLeft": 6*resolutionZoom,
-						  "marginRight": 6*resolutionZoom,
-						  "marginTop": 6*resolutionZoom,
-						  "marginBottom": 18*resolutionZoom,
-						  "graphs": [],
-						  "chartCursor": {
-						      "cursorAlpha": 0,
-						      "zoomable": false,
-						      "oneBalloonOnly":true,
-						      "color": "#FFF",
-							  "categoryBalloonColor": balloonColors[v.color],
-						  },
-						  "valueAxes": [ {
-						    "stackType": "regular",
-						    "labelsEnabled": false,
-						    "gridAlpha": 0,
-						    "axisAlpha": 0
-						  } ],
-						  "categoryAxis": {
-						    "gridAlpha": 0,
-						    "axisAlpha": 0,
-						    "color": "#9E9E9E",
-						    "fontSize": 8*resolutionZoom,
-						    "autoGridCount":false,
-						    "gridCount":json.data.length
-						  },
-						  "balloon": {
-						    "drop": false,
-						    "borderAlpha": 0,
-						    "fillAlpha": 0,
-						    "shadowAlpha": 0,
-						  },
-						  "listeners": [{
-				                "event": "drawn",
-								"method": DrawnColumnChart
-				          }]
-						};
-						
-						var colorIndex = 0;
-						$.each(json.data[0], function(ii, vv){
-							if(ii != "category"){
-								var txt = "<table style='font-size:"+9*resolutionZoom+"px; line-height: "+12*resolutionZoom+"px;'>";
-				                var txt_in = "";
-				                $.each(json.data[0], function(iii, vvv){
-				                	if(iii != "category"){
-				                		txt_in = "<tr style='color:"+ (ii==iii?'#FFF':'#BDBDBD') +";'><td style='text-align:left;'><span style='text-align:left;' class='toolImg'>"+ iii +"</span></td><td style='text-align:right;'><span style='text-align:right;'>[["+ iii +"]]</span></td></tr>" + txt_in;
-				                    }
-				                });
-				                txt += txt_in;
-				                txt += "</table>",
-				                graphSettings.graphs.push({
-									    "valueField": ii,
-									    "type": "column",
-									    "fillAlphas": 1,
-									    "lineColor": colors[v.color][colorIndex],
-									    "showBalloon": isBalloonShow,
-									    "balloonText": txt,
-								});
-								colorIndex++;
-							}
-						})
-						v.chart = AmCharts.makeChart("divChart" + i, graphSettings);
-						
-					}if(v.hasOwnProperty("recs") && v.type=="band" ){
-						var graphSettings = {
-						  "type": "serial",
-						  "dataProvider": AmCharts.parseJSON(JSON.stringify(json.data)),
-						  "categoryField": "category",
-						  "autoMargins": false,
-						  "addClassNames": true,
-						  "classNamePrefix": "column",
-						  "marginLeft": 6*resolutionZoom,
-						  "marginRight": 6*resolutionZoom,
-						  "marginTop": 12*resolutionZoom,
-						  "marginBottom": 18*resolutionZoom,
-						  "graphs": [],
-						  "chartCursor": {
-						      "cursorAlpha": 0,
-						      "zoomable": false,
-						      "oneBalloonOnly":true,
-						      "color": "#FFF",
-							  "categoryBalloonColor": balloonColors[v.color],
-						  },
-						  "valueAxes": [ {
-						    "stackType": "100%",
-						    "labelsEnabled": false,
-						    "gridAlpha": 0,
-						    "axisAlpha": 0
-						  } ],
-						  "categoryAxis": {
-						    "gridAlpha": 0,
-						    "axisAlpha": 0,
-						    "color": "#9E9E9E",
-						    "fontSize": 8*resolutionZoom,
-						    "autoGridCount":false,
-						    "gridCount":json.data.length
-						  },
-						  "balloon": {
-						    "drop": false,
-						    "borderAlpha": 0,
-						    "fillAlpha": 0,
-						    "shadowAlpha": 0,
-						  },
-						  "listeners": [{
-				                "event": "drawn",
-								"method": DrawnColumnChart
-				          }]
-						};
-						
-						var colorIndex = 0;
-						$.each(json.data[0], function(ii, vv){
-							if(ii != "category"){
-								var txt = "<table style='font-size:"+9*resolutionZoom+"px; line-height: "+12*resolutionZoom+"px;'>";
-				                var txt_in = "";
-				                $.each(json.data[0], function(iii, vvv){
-				                	if(iii != "category"){
-				                		txt_in = "<tr style='color:"+ (ii==iii?'#FFF':'#BDBDBD') +";'><td style='text-align:left;'><span style='text-align:left;' class='toolImg'>"+ iii +"</span></td><td style='text-align:right;'><span style='text-align:right;'>[["+ iii +"]]</span></td></tr>" + txt_in;
-				                    }
-				                });
-				                txt += txt_in;
-				                txt += "</table>",
-				                graphSettings.graphs.push({
-									    "valueField": ii,
-									    "type": "column",
-									    "fillAlphas": 1,
-									    "lineColor": colors[v.color][colorIndex],
-									    "showBalloon": isBalloonShow,
-									    "balloonText": txt,
-								});
-								colorIndex++;
-							}
-						})
-						v.chart = AmCharts.makeChart("divChart" + i, graphSettings);
-					}else if(v.hasOwnProperty("recs") && v.type=="line" ){
-					//折れ線
-						var graphSettings = {
-				            "theme": "light",
-				            "type": "serial",
-				            "autoMargins": false,
-				            "marginBottom": 18*resolutionZoom,
-				            "marginTop": 6*resolutionZoom,
-				            "marginLeft": 6*resolutionZoom,
-				            "marginRight": 6*resolutionZoom,
-				            "addClassNames": true,
-				            "dataProvider": AmCharts.parseJSON(JSON.stringify(json.data)),
-				            "zoomControl": {
-								"zoomControlEnabled": false
-							},
-				            "valueAxes": [{
-				                "id": "v1",
-				                "axisAlpha": 0,
-				                "offset":0,
-				                "ignoreAxisWidth":true,
-				                "autoGridCount":false,
-				                "gridCount": 0,
-				                "balloon": {
-				                  "enabled": false,
-				                },
-				            }],
-				            "graphs":[],
-				            "balloon": {
-				              "adjustBorderColor": true,
-				              "color": "#E0E0E0",
-				              "borderAlpha":0,
-				              "fillAlpha":0,
-				              "shadowAlpha":0,
-				              "borderThickness": 0,
-				              "verticalPadding": 2*resolutionZoom,
-				              "fontSize": 8*resolutionZoom,
-				            },
-				            "chartScrollbar": {
-				                "enabled": false,
-				            },
-				            "chartCursor": {
-						        "cursorAlpha": 0,
-						        "zoomable": false,
-						        "color": "#FFF",
-								"categoryBalloonColor": balloonColors[v.color],
-						    },
-				            "categoryField": "category",
-				            "categoryAxis": {
-				                "parseDates": false,
-				                "dashLength": 0,
-				                "axisColor": "#FFF",
-				                "color": "rgba(256,256,256,0.5)",
-				                "minorGridEnabled": false,
-				                "gridAlpha": 0,
-				                "fontSize": 8*resolutionZoom,
-				                "autoGridCount":false,
-				                "gridCount":json.data.length
-				            },
-				            "listeners": [{
-				                "event": "drawn",
-								"method": DrawnAmcharts
-				            }]
-				        };
-				        
-				        var colorIndex = 0;
-				        $.each(json.data[0], function(ii, vv){
-							if(ii != "category"){
-					            graphSettings.graphs.push({
-					                "id": "g"+ ii,
-					                "valueField": ii,
-					                "title": ii,
-					                "bulletField": "bullet",
-					                "useLineColorForBulletBorder": false,
-					                "hideBulletsCount": 50,
-					                "lineThickness": 1.5*resolutionZoom,
-					                "lineColor": colors[v.color][colorIndex],
-					                "type":"smoothedLine",
-					                "showBalloon": isBalloonShow,
-					                "balloonText": "<span style='font-size: "+10*resolutionZoom+"px; color:#FAFAFA;'>[[title]]</span><span><b style='font-size: "+10*resolutionZoom+"px; color:#FFF; padding-left: 6px;'>[[value]]</b></span>",
-					            });
-					            colorIndex++;
-				            }
-				        });
-						v.chart = AmCharts.makeChart("divChart" + i, graphSettings);
-					}else if(v.hasOwnProperty("recs") && v.type=="area" ){
-					//面グラフ
-						var graphSettings = {
-						    "type": "serial",
-						    "theme": "light",
-						    "autoMargins": false,
-						    "marginRight":6*resolutionZoom,
-						    "marginTop": 6*resolutionZoom,
-						    "marginLeft": 6*resolutionZoom,
-						    "marginBottom": 18*resolutionZoom,
-						    "addClassNames": true,
-				            "dataProvider": AmCharts.parseJSON(JSON.stringify(json.data)),
-				            "zoomControl": {
-								"zoomControlEnabled": false
-							},
-						    "valueAxes": [{
-				                "id": "v1",
-				                "stackType": "regular",
-				                "axisAlpha": 0,
-				                "offset":0,
-				                "color":"rgba(256,256,256,0.5)",
-				                "ignoreAxisWidth":true,
-				                "autoGridCount":false,
-				                "gridCount": 0,
-				                "balloon": {
-				                  "enabled": false,
-				                },
-				            }],
-						    "graphs": [],
-						    "plotAreaBorderAlpha": 0,
-						    "balloon": {
-				              "color": "#E0E0E0",
-				              "borderAlpha":0,
-				              "fillAlpha":0,
-				              "shadowAlpha":0,
-				              "borderThickness": 0,
-				              "verticalPadding": 2*resolutionZoom,
-				              "fontSize": 8*resolutionZoom,
-				            },
-						    "chartScrollbar": {
-				                "enabled": false,
-				            },
-						    "chartCursor": {
-						        "cursorAlpha": 0,
-						        "zoomable": false,
-						        "color": "#FFF",
-								"categoryBalloonColor": balloonColors[v.color],
-						    },
-						    "chartScrollbar": {
-				                "enabled": false,
-				            },
-						    "categoryField": "category",
-						    "categoryAxis": {
-						        "startOnAxis": true,
-						        "parseDates": false,
-				                "dashLength": 0,
-				                "axisColor": "#FFF",
-				                "color": "rgba(256,256,256,0.5)",
-				                "minorGridEnabled": false,
-				                "gridAlpha": 0,
-				                "fontSize": 8*resolutionZoom,
-				                "autoGridCount":false,
-				                "gridCount":json.data.length
-						    },
-						    "listeners": [{
-				                "event": "drawn",
-								"method": DrawnAmcharts
-				            }]
-						};
-				        
-				        var colorIndex = 0;
-				        $.each(json.data[0], function(ii, vv){
-							if(ii != "category"){
-					            graphSettings.graphs.push({
-					                "id": "g"+ ii,
-					                "valueField": ii,
-					                "fillAlphas": 0.6,
-							        "lineAlpha": 0.4,
-					                "title": ii,
-					                "fillColors": colors[v.color][colorIndex],
-					                "lineColor": colors[v.color][colorIndex],
-					                "showBalloon": isBalloonShow,
-					                "balloonText": "<span style='font-size: "+10*resolutionZoom+"px; color:#FAFAFA;'>[[title]]</span><span><b style='font-size: "+10*resolutionZoom+"px; color:#FFF; padding-left: "+6*resolutionZoom+"px;'>[[value]]</b></span>",
-					            });
-					            colorIndex++;
-				            }
-				        });
-				        v.chart = AmCharts.makeChart("divChart" + i, graphSettings);
-					}else if(v.type=="circle"){
-						
-						//円グラフ用に縦横変換
-						var pieData = AmCharts.parseJSON(JSON.stringify(json.data));
-						$.each(pieData, function(ii, vv){
-							vv.total = SumHashArray(Object.keys(vv).map(function (key) {
-								if(key == "category") return 0;
-								else return vv[key];
-							}));
-						});
-				        
-				        v.chart = AmCharts.makeChart( "divChart" + i, {
-				          "type": "pie",
-				          "marginBottom": 6*resolutionZoom,
-				          "marginTop": 6*resolutionZoom,
-				          "marginLeft": "25%",
-				          "marginRight": 6*resolutionZoom,
-				          "autoMargins": false,
-				          "groupedPulled": false,
-				          "dataProvider": pieData,
-				          "valueField": "total",
-				          "titleField": "category",
-				          "classNameField":"category",
-				          "labelText":"[[category]]",
-				          "fontSize":20,
-				          "labelRadius": -25*resolutionZoom,
-				          "color":"#FFF",
-				          "colors": reverseColors[v.color],
-				          "fontSize":5*resolutionZoom,
-				          "addClassNames":true,
-				          "balloonText": "",
-				          "radius": "48%",
-				          //"innerRadius": "50%",
-				          "outlineThickness": 1,
-				          "startDuration": 0,
-				          "allLabels": [{
-				            "id":"categoryPie",
-				            "text": "",
-				            "size": 16*resolutionZoom,
-				            "color":"#FFF",
-				            "align": "center",
-				            "bold": false,
-				            "y": "40%",
-				            "x": "-12.5%",
-				          }, {
-				            "id":"valuePie",
-				            "text": "",
-				            "color":"#FFF",
-				            "align": "center",
-				            "size": 16*resolutionZoom,
-				            "bold": true,
-				            "y": "50%",
-				            "x": "-12.5%",
-				          }],
-				          "listeners": [{
-				              "event": "rollOverSlice",
-				              "method": RrollOverSlice
-				          },{
-				              "event": "rollOutSlice",
-				              "method": RrollOutSlice
-				          }],
-				        });
-					}
-		        }
-	        },
-	        complete: function(d){
-	        	if(v.realtimeSecond > 0){
-	        		var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-					svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-					svg.setAttribute('class', 'loader');
-					$("#divPanel" + i).append(svg);
-					
-					$("#divPanel" + i + " svg.loader").append(CreatePath({"class":"loader", "fill":colors[v.color][colors[v.color].length-1], "opacity":".5", "transform":"translate(25, 25)"}));
-					
-					var alpha = 0
-					  , pi = Math.PI
-					  , t = v.realtimeSecond * 1000 / 360;
-
-					setInterval(function() {
-					  alpha++;
-					  alpha %= 360;
-					  var r = ( alpha * pi / 180 )
-					    , x = Math.sin( r ) * 22
-					    , y = Math.cos( r ) * - 22
-					    , mid = ( alpha > 180 ) ? 1 : 0
-					    , anim = 'M 0 0 v -22 A 22 22 1 ' 
-					           + mid + ' 1 ' 
-					           +  x  + ' ' 
-					           +  y  + ' z';
-					  $("#divPanel" + i + " svg path.loader").attr( 'd', anim );
-					}, t);
-					
-					setInterval(function(){
-						$.ajax({
-						    type: 'GET',
-						    url: '/html/data/sample_data_graph.json',
-						    dataType: 'json',
-						    success: function(json){
-						        if(json.data && json.data.length > 0) {
-						        	if(v.type == "circle"){
-						        		json.data = AmCharts.parseJSON(JSON.stringify(json.data));
-										$.each(json.data, function(ii, vv){
-											vv.total = SumHashArray(Object.keys(vv).map(function (key) {
-												if(key == "category") return 0;
-												else return vv[key];
-											}));
-										});
-						        	}
-									v.chart.dataProvider = json.data;
-									v.chart.validateData();
-									
-									//更新のアニメーション
-									$("#divPanel" + i).css(updateAnimetion)
-									setTimeout(function(){
-										$("#divPanel" + i).css(removeAnimetion)
-									}, 1500);
-								}
-							}
-						});
-					}, v.realtimeSecond * 1000)
-					
-					$("#divPanel" + i).append("<div class='loader'></div>");
-					//リアルタイムアイコン作成
-					var sonic = new Sonic({
-						width: 50,
-						height: 50,
-						backgroundColor: 'rgba(0,0,0,0)',
-						stepsPerFrame: 4,
-						trailLength: 1,
-						pointDistance: 0.01,
-						fps: 25,
-						setup: function() {
-							this._.lineWidth = 10;
-						},
-						step: function(point, i, f) {
-							var progress = point.progress,
-								degAngle = 360 * progress,
-								angle = Math.PI/180 * degAngle,
-								angleB = Math.PI/180 * (degAngle - 180),
-								size = i*3;
-							this._.fillStyle = colors[v.color][Math.floor(colors[v.color].length/3)];//'#FF7B24'
-							this._.fillRect(
-								Math.cos(angle) * 12.5 + (25-size/2),
-								Math.sin(angle) * 7.5 + (25-size/2),
-								size,
-								size
-							); 
-							this._.fillStyle = colors[v.color][Math.floor(colors[v.color].length/1.5)];//'#63D3FF'
-							this._.fillRect(
-								Math.cos(angleB) * 7.5 + (25-size/2),
-								Math.sin(angleB) * 12.5 + (25-size/2),
-								size,
-								size
-							);
-							if (point.progress == 1) {
-								this._.globalAlpha = f < .5 ? 1-f : f;
-								this._.fillStyle = colors[v.color][0];
-								this._.beginPath();
-								this._.arc(25, 25, 2, 0, 360, 0);
-								this._.closePath();
-								this._.fill();
-							}
-						},
-						path: [
-							['line', 0, 0, 1, 1] // stub -- not actually rendered
-						]
-					});
-					$("#divPanel" + i + " div.loader").append(sonic.canvas);
-					sonic.play();
-	        	}
-	        }
-	    });
 	}
 	
-	function SetChatsData(data) {
-		$.each(data, function(i, v){
-			setTimeout(function(){
-				//グラフサマリ値
-				if(v.sum != ""){
-					$.ajax({
-					    type: 'GET',
-					    url: '/html/data/sample_data_sum.json',
-					    dataType: 'json',
-					    success : function(json){
-					    	//サマリ値の設定
-					    	$("#divPanel" + i).append('<div class="investData">'+ d3.format(',')(json.data[0].value) +'<span>'+ v.valueUnit +'<span><div>');
-						    $("#divPanel" + i + " .investData")
-						      .css("font-size", Number($("#divPanel"+ i +" div.investData").css("font-size").slice(0,-2)) *resolutionZoom)
-						      .css("top", Number($("#divPanel"+ i +" div.investData").css("top").slice(0,-2)) *resolutionZoom)
-						      .css("left", Number($("#divPanel"+ i +" div.investData").css("left").slice(0,-2)) *resolutionZoom);
-						    
-						    //色の設定
-						    $.each(v.color, function(ii,vv){
-								//色コードが指定されていない場合
-								if(vv=="") delete v.color[ii];
-							})
-							v.color = Object.keys(v.color).map(function (key) {
-								if(v.color[key] && v.color[key] != "")
-								return {color:key, value:Number(v.color[key])};
-							});
-							v.color.sort(function(a,b){
-							    if(a.value>b.value) return -1;
-								if(a.value < b.value) return 1;
-							    return 0;
-							});
-						    if(v.color.length>0){
-						    	$.each(v.color, function(ii, vv){
-							    	if(Number(json.data[0].value) >= vv.value) {
-							    		v.color = vv.color;
-							    		return false;
-							    	}
-							    });
-						    }else{
-						    	//色の設定がなかった時のデフォ値はblue
-						    	v.color = "blue";
-						    }
-					    },
-						complete: function(){
-							DrawGraph(i, v);
-					    }
-					});
-				}else{
-					//サマリ値が指定されていない場合
-					v.color = "blue";
-					DrawGraph(i, v);
-				}
-			}, 100 * i);
-		});
-	}
 
 	//Straight表示用にパネルを徐々に透明にしていく
 	function HideAutoPanel(){
@@ -1616,7 +1041,6 @@ ThreeDD.main = function(){
 	$("#sb-site").attr("id", "container");
 	$("#dockbar-container").css("display", "none");
 	$("#wrapper, #add-btn-area").css("display", "none");
-	$("#container").css("background", "url('"+ MakePath("image/background.jpg") +"')");
 	$("#container").css("height", "100%");
 	
 	//パネル表示スタイル変更ボタン
@@ -1626,12 +1050,6 @@ ThreeDD.main = function(){
 	$("body").append('<div id="menuDisplay"><button>sphere</button><button>helix</button><button>grid</button><button>table</button><button>circle</button><button>straight</button></div>');
 	$("#menuDisplay button:nth-child("+ (indexDisplayStyle+1) +")").addClass("active");
 	displyStyle = hashDisplayStyle[indexDisplayStyle];
-		
-	//ソフトバンクロゴ
-	$("body").append("<div id='sumaryDiv' style='position: absolute;bottom: 12px;right: 12px;'>");
-	var headerHtml = '<img style="height: 30px" alt="logo02" src="'+ MakePath("icon/icon_softbank_blk.png") +'">';
-	$("div#sumaryDiv").append(headerHtml);
-	$("div#sumaryDiv").css({"transform-origin":"right bottom 0px"});
 	
 	//時計
 	var _monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -1780,15 +1198,7 @@ ThreeDD.main = function(){
 				
 				//フィルタ選択モードであれば、フィルタを反映させる。
 				elements.transition();
-				var target = $("#inputSearch").get(0).value.toLowerCase();
-				elements
-		        .style("opacity",  function(d){
-		        	if (d.name.toLowerCase().indexOf(target) == -1) return 0.05;
-		        	else {
-		        		return 1;
-		        	}
-		        })
-		        .style("visibility", "visible");
+				elements.style("visibility", "visible");
 				
 				break;
 		}
@@ -1874,51 +1284,13 @@ ThreeDD.main = function(){
 	});
 	
 	//検索ウィンドウ
-	$("body").append("<div id='txtSearchResult' style='position:absolute;bottom: 52px;font-size: 12px;left: 120px;color: white;'></div><div id='txtSearch' style='position:absolute;bottom:12px;left:96px;'><input type='text' placeholder='search…' id='inputSearch' autofocus></div>");
-	$("#inputSearch, #selectReconstruction").on('mouseover', function(){
-		controls.enabled = false;
-	});
-	$("#inputSearch, #selectReconstruction").on('mouseout', function(){
-		if(!autoRotate) controls.enabled = true;
-	});
-	$("#inputSearch").keyup(function(){
-		var target = $(this)[0].value.toLowerCase();
-		var c=0;
-        elements
-        .style("opacity",  function(d){
-        	if (d.name.toLowerCase().indexOf(target) == -1) return 0.05;
-        	else {
-        		if(!filterCategory || (filterCategory && d.classification == filterCategory)) c++;
-        		return 1;
-        	}
-        });
-        if(c == dataCount) $("#txtSearchResult").text("");
-        else if(c > 0) $("#txtSearchResult").text(c+" 件ヒットしました");
-        else $("#txtSearchResult").text("検索結果なし");
-    });
-    
+	$("body").append("<div id='txtSearchResult' style='position:absolute;bottom: 52px;font-size: 12px;left: 120px;color: white;'></div><div id='txtSearch' style='position:absolute;bottom:12px;left:96px;'></div>");
+
 	//初期表示スタイル適用
 	$("#menuDisplay button.active").trigger("click");
 	
 	//画面リサイズ
 	window.addEventListener('resize', WindowResize, false);
-
-	//メニューボタン作成
-	var menuIconSvg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-	menuIconSvg.setAttribute("id", "menuRect");
-	menuIconSvg.setAttribute("class", "tooltipIcon");
-	menuIconSvg.setAttribute("title", "menu");
-	menuIconSvg.setAttribute("height", 40);
-	menuIconSvg.setAttribute("width", 40);
-	menuIconSvg.setAttribute("style", "position: absolute;left: 20px;top: 20px;background: rgba(160, 160, 160, 0.5);z-index: 9999;border-radius: 20px;");
-	$("body").append(menuIconSvg);
-	$("#menuRect").append(CreateRect({"width":"20", "height":"5", "fill":"white", "x":"10", "y":"12.5", "opacity":".9", "class":"tooltipIcon", "title":"menu"}));
-	$("#menuRect").append(CreateRect({"width":"20", "height":"5", "fill":"white", "x":"10", "y":"22.5", "opacity":".9", "class":"tooltipIcon", "title":"menu"}));
-	
-	//基盤のメニューウィンドウを表示する
-	$("#menuRect").on("click", function(){
-	    $('#menu').trigger("click");
-	});
 	
 	//ツールチップ作成
 	$("body").append("<div id='tooltipIcon'></span>");
@@ -1937,11 +1309,6 @@ ThreeDD.main = function(){
     	if(d.toElement.className instanceof Object && d.toElement.className.baseVal.indexOf("tooltipIcon") > -1) return;
     	else tooltipIcon.style("opacity", "0").style("visibility", "hidden");
     });
-
-	SetChatsData(_data);
-	
-	//リアルタイム更新処理
-	
 	
 	//リロードと表示スタイルの変更
 	setTimeout(function(){
