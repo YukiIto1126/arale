@@ -293,6 +293,7 @@ ThreeDD.main = function(){
 			 borderInside.phi = 0.62;
 		}
 		
+		//ランダム配置
 		var random = new THREE.Object3D();
 		random.position.x = (Math.random() * 4000 - 2000)*resolutionZoom;
 		random.position.y = (Math.random() * 4000 - 2000)*resolutionZoom;
@@ -333,7 +334,7 @@ ThreeDD.main = function(){
 		vector.x = helix.position.x * 2 *resolutionZoom;
 		vector.y = helix.position.y *resolutionZoom;
 		vector.z = helix.position.z * 2 *resolutionZoom;
-		helix.lookAt(vector);
+		helix.lookAt(camera.position);
 		d['helix'] = helix;
 		
 		//螺旋_内向き
@@ -344,7 +345,7 @@ ThreeDD.main = function(){
 		helix_i.position.y = (- ((i-filterCnt) * 8) + (dataCount/25)*100)*resolutionZoom;
 		helix_i.position.z = (borderInside.helix * Math.cos(phi))*resolutionZoom;
 		vector.copy(helix_i.position).multiplyScalar(0.5)
-		helix_i.lookAt(vector);
+		helix_i.lookAt(camera.position);
 		d['helix_i'] = helix_i;
 		
 		//円形順列
@@ -879,9 +880,9 @@ function MoveCameraObject(e){
 				.delay(function(d, i){
 					return i * straightLength / movementSpeed * 1000 + delayBase
 				})
-			    .style("opacity",  0)
-			    .transition()
-			    .delay(function(d, i){
+		    .style("opacity",  0)
+		    .transition()
+		    .delay(function(d, i){
 					return i * straightLength / movementSpeed * 1000 + delayBase + animationSpeed
 				})
 		    .style("visibility",  "hidden");
@@ -891,12 +892,12 @@ function MoveCameraObject(e){
 			.delay(function(d, i){
 				return i * straightLength / movementSpeed * 1000 + delayBase
 			})
-		    .style("opacity",  0)
-		    .transition()
-		    .delay(function(d, i){
+	    .style("opacity",  0)
+	    .transition()
+	    .delay(function(d, i){
 				return i * straightLength / movementSpeed * 1000 + delayBase + animationSpeed
 			})
-		    .style("visibility",  "hidden");
+		  .style("visibility",  "hidden");
 		}
 	    
 	    //繰り返しパネル
@@ -1261,13 +1262,6 @@ function MoveCameraObject(e){
     	else tooltipIcon.style("opacity", "0").style("visibility", "hidden");
     });
 	
-	//リロードと表示スタイルの変更
-	setTimeout(function(){
-		var url = location.href.replace(/\?.*$/,"")
-		if(indexDisplayStyle == 1 || indexDisplayStyle == 2) indexDisplayStyle = 3
-		var index = ((indexDisplayStyle + 1) % Object.keys(hashDisplayStyle).length)
-		location.href = url + "?displayStyle=" + index;
-	}, 1200000);
 	this.finished=true;
 }
 window.ThreeDD = ThreeDD;
