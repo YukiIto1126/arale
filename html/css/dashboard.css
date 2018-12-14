@@ -404,3 +404,31 @@ div.element div.loader{
 	position: absolute;
 	top: 20px;
 }
+
+/* スタンプの幅を最適化 */
+#sendstamp{
+	z-index: 0;
+	height:160px;
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	width: 100%;
+	background:
+	rgba(256,256,256,.24);
+}
+#sendstamp{
+	overflow-y: scroll;
+}
+#sendstamp table{
+	width: 100%;
+	padding: 0px 16px 0px 16px;
+}
+td.stamp{
+	width: 25%;
+}
+#sendstamp table td{
+	padding-top: 4px;
+}
+#sendstamp table td img{
+	width: 100%;
+}

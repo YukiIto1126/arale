@@ -38,12 +38,59 @@
 	</head>
 
 	<body>
+	<!-- 		スタンプ送信 -->
+		<div id="sendstamp">
+			<table>
+				<tbody>
+					<tr>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_0.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_1.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_2.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_3.png">
+						</td>
+					</tr>
+					<tr>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_4.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_5.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_6.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_7.png">
+						</td>
+					</tr>
+					<tr>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_8.png">
+						</td>
+						<td class="stamp">
+							<img src="html/image/babo/sticker_9.png">
+						</td>
+						<td class="stamp"></td>
+						<td class="stamp"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>    
+		<!-- 		カメラ領域 -->
 		<video id="video" autoplay playsinline style="z-index: -2; height:100%; position:absolute; top:0px; left:0px; width: 100%;"></video>
+		<!-- 		スタンプアニメーション -->
 	  <div id="container" style="z-index: -1; height:100%; position:absolute; top:0px; left:0px; width: 100%; background: none;" class="main"></div>    
 	</body>
 	
 	<script type="text/javascript">
 			ThreeDD.main();
 			videoStart();
-		</script>
+	</script>
 </html>
