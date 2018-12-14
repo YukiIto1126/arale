@@ -1261,6 +1261,46 @@ function MoveCameraObject(e){
     	if(d.toElement.className instanceof Object && d.toElement.className.baseVal.indexOf("tooltipIcon") > -1) return;
     	else tooltipIcon.style("opacity", "0").style("visibility", "hidden");
     });
+    
+  $("#sendstamp .stamp img").on("click", function(i, e){
+	  //ミニグラフのサイズ定義
+    var width  = 230 * resolutionZoom,
+        height = 160 * resolutionZoom;
+	  //新規投稿データ生成
+	  var newData = [{"img":i.currentTarget.getAttribute("src")}];
+	  //グラフ描画用のDIV生成
+    var newElements = d3.selectAll('.elementNew')
+        .data(newData).enter()
+        .append('div')
+        .attr('class', 'elementNew')
+        .style({
+	        "width":width + "px",
+	        "height": height + "px",
+					"background": function(e, i){
+							return "url('"+e.img+"')"
+					},
+					"background-attachment": "fixed",
+					"background-repeat": "no-repeat",
+					"opacity": "0"
+				});
+	    		
+		//座標を設定
+		var newPosition = new THREE.Object3D();
+		vector = new THREE.Vector3();
+		newPosition.position.x = camera.position.x;
+		newPosition.position.y = camera.position.y;
+		newPosition.position.z = camera.position.z - 16;
+		newPosition.lookAt(new THREE.Vector3(0, 0, 0));
+		newData[0]['newPosition'] = newPosition;
+		
+		//シーンへの初期配置処理
+		$.each(newElements[0], function(i, v){
+			object = new THREE.CSS3DObject(v);
+		    object.position.fromArray(v['__data__'].newPosition.position);
+		    object.rotation.fromArray(v['__data__'].newPosition.rotation);
+		    scene2.add(object);
+		});
+  });
 	
 	this.finished=true;
 }
