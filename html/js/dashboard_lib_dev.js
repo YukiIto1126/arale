@@ -39,10 +39,6 @@ ThreeDD.main = function(){
 	/////////////////////////
 	//関数
 	/////////////////////////
-	function Tricks(){
-		$("#layout-column_column-1").children().remove();
-	}
-	Tricks();
 	
 	function MakeUrl(str){
 		return site_settings.graphInfoServiceSSL + site_settings.graphInfoServiceIP + "/graphservice/" + str + "?sessionId=" + site_settings.sessionId;
@@ -160,24 +156,23 @@ ThreeDD.main = function(){
 					"background-attachment": "fixed",
 					"background-repeat": "no-repeat",
 					"opacity": "0"
-/*
-					"animation": function(e, i){
-						return 'Flash1 2s ease infinite';
-					}
-*/
 				});
 	    		
 		//座標を設定
-		elements.each(SetPosition);
+		var cnt = 0;
+		for (let elm of elements[0]) {
+			SetPosition(elm, cnt);
+			cnt++;
+		}
 		
-		//シーンへの初期配置処理
-		$.each(elements[0], function(i, v){
-			object = new THREE.CSS3DObject(v);
-		    //object.position = v['__data__'].helix.position;
-		    object.position.fromArray(v['__data__'].helix.position);
-		    object.rotation.fromArray(v['__data__'].helix.rotation);
+		//シーンへの初期配置処理		
+		let list = document.getElementsByClassName('fuga');
+		for (let elm of elements[0]) {
+			object = new THREE.CSS3DObject(elm);
+		    object.position.fromArray(elm['__data__'].helix.position);
+		    object.rotation.fromArray(elm['__data__'].helix.rotation);
 		    scene2.add(object);
-		});
+		}
 		
 		renderer2 = new THREE.CSS3DRenderer();
 		renderer2.setSize( window.innerWidth, window.innerHeight );
@@ -241,7 +236,8 @@ ThreeDD.main = function(){
 		if(isAnimateCircle){
 			theta = oldTimeCircle + (clockCircle.getElapsedTime()/(5*dataCount)) ;
 			r = 40 * dataCount;
-			$.each(scene2.children, function(i, v){
+			
+			for (let i = 0; i < scene2.children.length; i++) {
 				var circle = new THREE.Object3D();
 				var vector = new THREE.Vector3();
 				var phi = 2 * i/dataCount * Math.PI + theta;
@@ -253,10 +249,10 @@ ThreeDD.main = function(){
 				vector.z = Math.SQRT2 * r * Math.cos(phi_dash) * resolutionZoom;
 				circle.lookAt(vector);
 				
-				v.position.set(circle.position.x, circle.position.y, circle.position.z);
-				v.rotation.set(circle.rotation.x, circle.rotation.y, circle.rotation.z);
-			});
-		    camera.lookAt(new THREE.Vector3(0, 0, 0));
+				scene2.children[i].position.set(circle.position.x, circle.position.y, circle.position.z);
+				scene2.children[i].rotation.set(circle.rotation.x, circle.rotation.y, circle.rotation.z);	
+			}
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
 		}
 		
 		TWEEN.update();
@@ -298,7 +294,7 @@ ThreeDD.main = function(){
 		random.position.x = (Math.random() * 4000 - 2000)*resolutionZoom;
 		random.position.y = (Math.random() * 4000 - 2000)*resolutionZoom;
 		random.position.z = (Math.random() * 4000 - 2000)*resolutionZoom;
-		d['random'] = random;
+		d['__data__']['random'] = random;
 		
 		//天体_外向き
 		var sphere = new THREE.Object3D();
@@ -310,7 +306,7 @@ ThreeDD.main = function(){
 		sphere.position.z = (borderInside.sphere * Math.cos(phi)) *resolutionZoom;
 		vector.copy(sphere.position).multiplyScalar(2);
 		sphere.lookAt(vector);
-		d['sphere'] = sphere;
+		d['__data__']['sphere'] = sphere;
 		
 		//天体_内向き
 		var sphere_i = new THREE.Object3D();
@@ -322,7 +318,7 @@ ThreeDD.main = function(){
 		sphere_i.position.z = (borderInside.sphere * Math.cos(phi)) *resolutionZoom;
 		vector.copy(sphere_i.position).multiplyScalar(0.5);
 		sphere_i.lookAt(vector);
-		d['sphere_i'] = sphere_i;
+		d['__data__']['sphere_i'] = sphere_i;
 		
 		//螺旋_外向き
 		var helix = new THREE.Object3D();
@@ -335,7 +331,7 @@ ThreeDD.main = function(){
 		vector.y = helix.position.y *resolutionZoom;
 		vector.z = helix.position.z * 2 *resolutionZoom;
 		helix.lookAt(camera.position);
-		d['helix'] = helix;
+		d['__data__']['helix'] = helix;
 		
 		//螺旋_内向き
 		var helix_i = new THREE.Object3D();
@@ -346,7 +342,7 @@ ThreeDD.main = function(){
 		helix_i.position.z = (borderInside.helix * Math.cos(phi))*resolutionZoom;
 		vector.copy(helix_i.position).multiplyScalar(0.5)
 		helix_i.lookAt(camera.position);
-		d['helix_i'] = helix_i;
+		d['__data__']['helix_i'] = helix_i;
 		
 		//円形順列
 		var circle = new THREE.Object3D();
@@ -361,21 +357,21 @@ ThreeDD.main = function(){
 		vector.y = 0;
 		vector.z = Math.SQRT2 * r * Math.cos(phi_dash);
 		circle.lookAt(vector);
-		d['circle'] = circle;
+		d['__data__']['circle'] = circle;
 		
 		//直列順列
 		var straight = new THREE.Object3D();
 		straight.position.x = 0;
 		straight.position.y = 0;
 		straight.position.z = (dataCount - (i-filterCnt))*straightLength - (dataCount/2 * straightLength);
-		d['straight'] = straight;
+		d['__data__']['straight'] = straight;
 		
 		//マトリックス表示
 		var grid = new THREE.Object3D();
 		grid.position.x = ((( (i-filterCnt) % 5 ) * 400) - 800)*resolutionZoom ;
 		grid.position.y = (( - ( Math.floor( (i-filterCnt) / 5 ) % 5 ) * 400 ) + 800)*resolutionZoom ;
 		grid.position.z = ((Math.floor( (i-filterCnt) / 25 )) * 1000 - 2000)*resolutionZoom ;
-		d['grid'] = grid;
+		d['__data__']['grid'] = grid;
 		
 		//表形式表示
 		var table = new THREE.Object3D();
@@ -383,7 +379,7 @@ ThreeDD.main = function(){
 		table.position.x = ((((i-filterCnt) % sqrt ) * 300) - (150 * sqrt))*resolutionZoom + 450;
 		table.position.y = (( - ( Math.floor( (i-filterCnt) / sqrt ) % sqrt ) * 200 ) + (100 * sqrt))*resolutionZoom - 300;
 		table.position.z = 2000;
-		d['table'] = table;
+		d['__data__']['table'] = table;
 	}
 	//パネル反転
 	function ReversalPanel(e, callback){
@@ -434,8 +430,7 @@ ThreeDD.main = function(){
 			.style('display', "block");
 		
 		//パネルの移動
-		$.each(scene2.children, function(i, v){
-			
+		for (let i = 0; i < scene2.children.length; i++) {
 			var newPos;
 			var newRot;
 			
@@ -455,21 +450,20 @@ ThreeDD.main = function(){
 				newRot = circle.rotation;
 				
 			}else{
-				newPos = v.element.__data__[layout].position;
-				newRot = v.element.__data__[layout].rotation;
+				newPos = scene2.children[i].element.__data__[layout].position;
+				newRot = scene2.children[i].element.__data__[layout].rotation;
 			}
 			
-			var coords = new TWEEN.Tween(v.position)
+			var coords = new TWEEN.Tween(scene2.children[i].position)
 			    .to({x: newPos.x, y: newPos.y, z: newPos.z}, Math.random() * duration + duration)
 			    .easing(TWEEN.Easing.Exponential.InOut)
 			    .start();
 			
-			var rotate = new TWEEN.Tween(v.rotation)
+			var rotate = new TWEEN.Tween(scene2.children[i].rotation)
 			    .to({x: newRot.x, y: newRot.y, z: newRot.z}, Math.random() * duration + duration)
 			    .easing(TWEEN.Easing.Exponential.InOut)
 			    .start();
-		});
-
+		}
 		var update = new TWEEN.Tween(this)
 			.to({}, duration * 2)
 			.onComplete(function(){
@@ -520,7 +514,8 @@ function MoveCameraObject(e){
 		clockCircle.stop();
 		isAnimateCircle = false;
 		r = 40 * dataCount;
-		$.each(scene2.children, function(i, v){
+		
+		for (let i = 0; i < scene2.children.length; i++) {
 			var circle = new THREE.Object3D();
 			var vector = new THREE.Vector3();
 			var phi = 2 * i/dataCount * Math.PI + theta;
@@ -545,11 +540,11 @@ function MoveCameraObject(e){
 			    .to(to, 300)
 			    .easing(TWEEN.Easing.Linear.None)
 			    .onUpdate(function () {
-			        v.position.set(this.x_pos, this.y_pos, this.z_pos);
-			        v.rotation.set(this.x_rot, this.y_rot, this.z_rot);
+			        scene2.children[i].position.set(this.x_pos, this.y_pos, this.z_pos);
+			        scene2.children[i].rotation.set(this.x_rot, this.y_rot, this.z_rot);
 				})
 				.start();
-		});
+		}
 		
 		//カメラの移動前ポジション
 		var from = {
@@ -1040,9 +1035,9 @@ function MoveCameraObject(e){
 	}, 60000);
 	
 	//データ調整
-	$.each(_data, function(i, v){
-		v.index = i;
-	});
+	for(var i = 0; i < _data.length; i++) {
+		_data[i].index = i;
+	}
 	dataCount = _data.length;
 	movementSpeed = 10000 / dataCount;
 	
@@ -1082,48 +1077,7 @@ function MoveCameraObject(e){
 	path2.setAttribute('d', 'M3442.4,4188c-157.8-71.3-302.9-216.4-366.6-366.6c-114.6-259.7-122.2-231.6,570.2-2466.8c343.7-1117.5,626.2-2036.6,626.2-2046.7c0-7.6-96.7,73.8-213.8,185.8C3495.9,18.2,2966.4,127.6,2594.7-208.4c-162.9-147.6-241.8-323.3-241.8-547.3c0-252,78.9-389.5,381.9-669.5c325.8-302.9,595.7-608.4,990.3-1127.8c641.5-837.5,1036.1-1143,1952.6-1499.4c173.1-66.2,338.6-145.1,366.6-173.1c30.6-30.5,78.9-137.5,109.5-239.3c45.8-152.7,68.7-193.5,137.5-234.2c45.8-28,112-50.9,152.7-50.9c38.2,0,794.3,224,1680.2,496.4c1710.7,524.4,1695.4,519.3,1738.7,689.9c10.2,35.6-12.7,165.5-53.5,310.6l-68.7,249.5l53.5,264.7c183.3,921.5,132.4,1662.3-178.2,2558.4c-50.9,155.3-211.3,577.9-353.9,939.4c-142.5,364-315.7,827.3-384.4,1031c-140,407.3-208.8,532-364.1,636.4c-142.5,96.7-252,129.8-422.6,129.8c-208.8,0-371.7-63.6-511.7-203.7l-117.1-117.1l-58.5,109.5c-106.9,203.7-323.3,338.6-575.3,358.9c-226.6,17.8-389.5-43.3-565.1-213.8l-140-134.9l-61.1,73.8c-33.1,40.7-127.3,106.9-206.2,145.1c-119.7,58.5-178.2,71.3-323.3,68.7c-229.1-2.6-381.9-73.8-542.2-254.6L4868,2253.3l-211.3,692.4c-117.1,381.9-236.8,753.5-264.8,829.9c-63.6,175.6-198.6,325.8-361.5,399.7C3867.5,4254.2,3597.7,4259.3,3442.4,4188z M3898.1,3790.9c28-17.8,63.6-53.4,81.5-81.5c17.8-25.5,244.4-738.3,506.6-1586c262.2-847.7,496.4-1568.1,521.9-1603.8c145.1-201.1,455.7-147.6,532.1,91.7c30.6,96.7,22.9,127.3-147.6,682.2c-96.7,320.7-178.2,611-178.2,649.2c0,173.1,185.8,323.3,364,300.4c183.3-25.5,229.1-101.8,397.1-636.4c81.4-262.2,168-498.9,193.5-527c99.3-109.5,323.3-86.5,407.3,40.7c58.5,89.1,48.4,196-50.9,516.8c-101.8,333.5-106.9,392-38.2,504c68.7,114.6,185.8,168,325.8,152.7c188.4-20.4,236.7-94.2,386.9-577.9c150.2-483.7,201.1-560.1,384.4-560.1c84,0,119.6,15.3,190.9,86.6c101.8,101.8,109.5,173.1,33.1,386.9c-86.6,252-28,422.6,175.6,511.7c109.5,45.8,259.7,7.6,343.7-91.6c33.1-40.7,119.6-244.4,190.9-455.7c73.8-211.3,208.8-575.3,300.4-812.1c555-1412.9,641.5-1726,664.4-2387.9c15.3-407.3-7.6-667-99.3-1125.2l-56-282.6l53.5-201.1c30.5-109.5,48.3-203.7,43.3-208.7c-28-30.6-2874.1-891-2886.8-873.2c-10.2,10.2-38.2,73.8-63.6,142.6c-76.4,206.2-188.4,292.8-575.3,445.5c-896.1,353.8-1275.4,639-1825.3,1369.6c-394.6,521.9-705.2,875.7-1132.8,1272.8C2750-885.6,2714.3-791.4,2775.4-631c53.5,140,178.2,216.4,341.1,203.7c277.5-22.9,598.2-254.6,1036.1-753.5c137.5-155.3,280-300.4,315.7-323.3c119.6-78.9,364,12.7,399.7,150.2c10.2,40.7-224,837.5-725.5,2461.7c-567.7,1848.2-735.7,2420.9-723,2484.6c17.8,94.2,140,229.1,224,244.4C3719.9,3852,3842.1,3829.1,3898.1,3790.9z');
 	$("#svgSwitchRotateMode g").append(path2);
 	$("#svgSwitchRotateMode").on("click", RotateAuto);
-	
-	//バルーン表示切替
-	var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-	svg.setAttribute('width', '40px');
-	svg.setAttribute('height', '40px');
-	svg.setAttribute('id', 'switchBalloomShow');
-	svg.setAttribute('class', 'tooltipIcon');
-	svg.setAttribute('title', 'tooltip');
-	svg.setAttribute('style', 'position: absolute;bottom: 73px;left: 30px;border-radius: 30px;background: rgba(0,0,0,0.3);');
-	$("body").append(svg);
-	
-	var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-	g.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-	g.setAttribute('transform', 'translate(10,13) scale(0.0022,-0.0024)');
-	g.setAttribute('class', 'tooltipIcon');
-	g.setAttribute('title', 'tooltip');
-	$("#switchBalloomShow").append(g)
-	
-	var path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-	path1.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-	path1.setAttribute('style', 'fill:rgb(256,256,256); opacity:.2');
-	path1.setAttribute('class', 'tooltipIcon');
-	path1.setAttribute('title', 'tooltip');
-	path1.setAttribute('d', 'M925.3,960.2C564.6,801.8,195.1,353.1,133.5,1.2c-26.4-158.4-44-1513.4-26.4-3026.8c26.4-2613.2,35.2-2754,211.2-2982.8C723-6553.8,881.4-6615.4,2122-6641.8l1143.8-35.2l835.9-1003.1c466.3-554.3,879.9-1003,915-1003c35.2,0,448.8,448.7,915.1,1003L6767.6-6677l1143.8,35.2c1240.7,26.4,1398.9,88,1803.7,633.4c176,228.8,184.8,352,184.8,3220.4c0,2868.4-8.8,2991.5-184.8,3220.3c-96.8,132-290.3,325.5-422.3,422.3c-237.6,176-351.9,184.8-4170.6,202.4C1990,1074.6,1136.5,1057,925.3,960.2z M8536.2-1380.2v-351.9H5016.7H1497.3v351.9v352h3519.4h3519.5V-1380.2z M8536.2-2788v-351.9H5016.7H1497.3v351.9v352h3519.4h3519.5V-2788z M8536.2-4195.8v-352H5016.7H1497.3v352v351.9h3519.4h3519.5V-4195.8z');
-	$("#switchBalloomShow g").append(path1);
-	
-	$("#switchBalloomShow").on("click", function(){
-		isBalloonShow = !isBalloonShow;
-		$("#switchBalloomShow g path").css("opacity", isBalloonShow?1:.2);
-		$.each(_data, function(i,v){
-			if(v.chart !== void(0)){
-				if(v.type!="circle"){
-					$.each(v.chart.graphs, function(ii,vv){
-						vv.showBalloon = isBalloonShow;
-					})
-				}
-				v.chart.validateData();
-			}
-		});
-	});
-	
+		
 	//表示形式変更
 	$("#menuDisplay button").on("click", function(e){
 		//選択されているボタンの見た目変更
@@ -1294,12 +1248,12 @@ function MoveCameraObject(e){
 		newData[0]['newPosition'] = newPosition;
 		
 		//シーンへの初期配置処理
-		$.each(newElements[0], function(i, v){
-			object = new THREE.CSS3DObject(v);
-		    object.position.fromArray(v['__data__'].newPosition.position);
-		    object.rotation.fromArray(v['__data__'].newPosition.rotation);
+		for(var i = 0; i < newElements[0].length; i++) {
+			object = new THREE.CSS3DObject(newElements[0][i]);
+		    object.position.fromArray(newElements[0][i]['__data__'].newPosition.position);
+		    object.rotation.fromArray(newElements[0][i]['__data__'].newPosition.rotation);
 		    scene2.add(object);
-		});
+		}
   });
 	
 	this.finished=true;
