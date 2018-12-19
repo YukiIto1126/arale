@@ -738,87 +738,6 @@ function MoveCameraObject(e){
 		    .start();
 	}
 	
-	  function RrollOverSlice(e){
-    	if(isBalloonShow){
-            $(e.chart.chartDiv).find("text.amcharts-label-categoryPie tspan").text(e.dataItem.dataContext.category);
-            $(e.chart.chartDiv).find("text.amcharts-label-valuePie tspan").text(e.dataItem.dataContext.total);
-    	}
-    	$(e.chart.chartDiv).find("g.amcharts-pie-item path").css("opacity", 0.2);
-    	$(e.chart.chartDiv).find("text.amcharts-pie-label").css("opacity", 0.2);
-    	if(e.event) $(e.event.target).css("opacity", 1);
-        else {
-        	$(e.chart.chartDiv).find("g.amcharts-pie-item." + e.dataItem.title + " path").css("opacity", 1);
-        }
-        $(e.chart.chartDiv).find("text.amcharts-pie-label." + e.dataItem.title).css("opacity", 1);
-    }
-    
-    function RrollOutSlice(e){
-    	if(isBalloonShow){
-            $(e.chart.chartDiv).find("text.amcharts-label-categoryPie tspan").text("");
-            $(e.chart.chartDiv).find("text.amcharts-label-valuePie tspan").text("");
-        }
-        $(e.chart.chartDiv).find("g.amcharts-pie-item path").css("opacity", 1);
-        $(e.chart.chartDiv).find("text.amcharts-pie-label").css("opacity", 1);
-    }
-    
-    function DrawnColumnChart(e){
-    	$(e.chart.chartDiv).find("g.column-category-axis text").css("opacity", 0);
-    	$(e.chart.chartDiv).find("g.column-category-axis text:last-child").css("opacity", 1);
-    	$(e.chart.chartDiv).find("g.column-category-axis text:first-child").css("opacity", 1);
-    	
-    	if(e.chart.dataProvider.length > 12){
-    		var divNum = Math.floor(e.chart.dataProvider.length/5);
-    		for(var i = 3; i < e.chart.dataProvider.length - divNum + 1; i++){
-	    		if(i%divNum == 1)
-	    			$(e.chart.chartDiv).find("g.column-category-axis text:nth-child(" + i + ")").css("opacity", 1);
-	    	}
-    	}else if(e.chart.dataProvider.length > 4){
-    		for(var i = 3; i < e.chart.dataProvider.length - 1; i++){
-	    		if(i%2 == 1)
-	    			$(e.chart.chartDiv).find("g.column-category-axis text:nth-child(" + i + ")").css("opacity", 1);
-	    	}
-    	}
-    }
-    
-    function DrawnAmcharts(e){
-    	$(e.chart.chartDiv).find("g.amcharts-category-axis text").css("opacity", 0);
-    	$(e.chart.chartDiv).find("g.amcharts-category-axis text:last-child").css("opacity", 1);
-    	$(e.chart.chartDiv).find("g.amcharts-category-axis text:first-child").css("opacity", 1);
-    	
-    	if(e.chart.dataProvider.length > 12){
-    		var divNum = Math.floor(e.chart.dataProvider.length/5);
-    		for(var i = 3; i < e.chart.dataProvider.length - divNum + 1; i++){
-	    		if(i%divNum == 1)
-	    			$(e.chart.chartDiv).find("g.amcharts-category-axis text:nth-child(" + i + ")").css("opacity", 1);
-	    	}
-    	}else if(e.chart.dataProvider.length > 4){
-    		for(var i = 3; i < e.chart.dataProvider.length - 1; i++){
-	    		if(i%2)
-	    			$(e.chart.chartDiv).find("g.amcharts-category-axis text:nth-child(" + i + ")").css("opacity", 1);
-	    	}
-    	}
-    }
-	
-	function DrawGraph(i, v){
-		$("#divPanel" + i)
-	    .css("color", titleColors[v.color])
-		.css("background-color", fillColors[v.color])
-        .css("border", "2px solid " + borderColors[v.color])
-        .on('mouseover', function(e){
-        	$(this).css({
-        		"box-shadow": "0px 0px 12px " + shadowColors[v.color],
-        		"border": "1px solid " + borderColors[v.color],
-        	});
-        })
-        .on('mouseout', function(e){
-        	$(this).css({
-        		"box-shadow": "none",
-        		"border": "2px solid " + borderColors[v.color],
-        	});
-        });
-	}
-	
-
 	//Straight表示用にパネルを徐々に透明にしていく
 	function HideAutoPanel(){
 		var delayBase = (straightLength/movementSpeed * 1000 * 0.4) + 500;
@@ -849,29 +768,29 @@ function MoveCameraObject(e){
 		  .style("visibility",  "hidden");
 		}
 	    
-	    //繰り返しパネル
-	    timerAutoHide = setTimeout(function(){
-	    	clockFly.stop();
-	    	$("body").append("<div id='restartStraight' style='opacity:0; border: 2px solid rgba(127, 127, 127, 0.25);position:absolute;width:575px;height:400px;background: rgba(101,101,101,0.8);color: white;text-align: center;font-size: 48px;border-radius: 8px; top:"+ (window.innerHeight-400)/2 +"px; left:"+ (window.innerWidth-575)/2 +"px;' ><span style='vertical-align: middle;line-height: 400px;'>リスタート</span></div>");
-	    	d3.select("#restartStraight").transition().duration(300).style("opacity",  1).each("end", function() {
-	    		$("#restartStraight").on('mouseover', function(e){
-		        	$(this).css({
-		        		"box-shadow": "0px 0px 12px rgba(256, 256, 256, 0.75)",
-		        		"border": "1px solid rgba(127, 127, 127, 0.25)",
-		        	});
-		        })
-		        .on('mouseout', function(e){
-		        	$(this).css({
-		        		"box-shadow": "none",
-		        		"border": "2px solid rgba(127, 127, 127, 0.25)",
-		        	});
-		        })
-		        .on("click", function(){
-		    		d3.select("#restartStraight").transition().duration(300).style("opacity",  0).delay(300).remove();
-		    		document.querySelector('#menuDisplay button.active').click();
-		    	});
+    //繰り返しパネル
+    timerAutoHide = setTimeout(function(){
+    	clockFly.stop();
+    	$("body").append("<div id='restartStraight' style='opacity:0; border: 2px solid rgba(127, 127, 127, 0.25);position:absolute;width:575px;height:400px;background: rgba(101,101,101,0.8);color: white;text-align: center;font-size: 48px;border-radius: 8px; top:"+ (window.innerHeight-400)/2 +"px; left:"+ (window.innerWidth-575)/2 +"px;' ><span style='vertical-align: middle;line-height: 400px;'>リスタート</span></div>");
+    	d3.select("#restartStraight").transition().duration(300).style("opacity",  1).each("end", function() {
+    		$("#restartStraight").on('mouseover', function(e){
+	        	$(this).css({
+	        		"box-shadow": "0px 0px 12px rgba(256, 256, 256, 0.75)",
+	        		"border": "1px solid rgba(127, 127, 127, 0.25)",
+	        	});
+	        })
+	        .on('mouseout', function(e){
+	        	$(this).css({
+	        		"box-shadow": "none",
+	        		"border": "2px solid rgba(127, 127, 127, 0.25)",
+	        	});
+	        })
+	        .on("click", function(){
+	    		d3.select("#restartStraight").transition().duration(300).style("opacity",  0).delay(300).remove();
+	    		document.querySelector('#menuDisplay button.active').click();
 	    	});
-	    }, ((timeCount + 2) * straightLength / movementSpeed * 1000 + 1000))
+    	});
+    }, ((timeCount + 2) * straightLength / movementSpeed * 1000 + 1000))
 	}
 
 	/////////////////////////
