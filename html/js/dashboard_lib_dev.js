@@ -823,7 +823,6 @@ function MoveCameraObject(e){
 	var resolutionZoom = 2.5; //解像度
 	var timerAutoHide;
 	var hashDisplayStyle = ["sphere", "helix", "grid", "table", "circle", "straight"];
-	var indexDisplayStyle = 1;
 	var colors = {
 		"blue":['#006064','#00838F','#0097A7','#00ACC1','#00BCD4','#26C6DA','#4DD0E1','#80DEEA', '#B2EBF2', '#E0F7FA'],
 		"red":['#B71C1C','#C62828','#D32F2F','#E53935','#F44336','#EF5350','#E57373','#EF9A9A', '#FFCDD2', '#FFEBEE'],
@@ -933,7 +932,7 @@ function MoveCameraObject(e){
 	path1.setAttribute('d', 'M1268.4,4933.9c-269.8-56-519.3-196-725.5-402.2c-491.3-491.3-583-1232.1-229.1-1838c94.2-160.4,346.2-412.4,506.6-506.6c422.6-246.9,949.6-280,1382.3-89.1c58.5,25.5,109.5,38.2,109.5,28c0-10.2-22.9-86.6-50.9-170.6c-63.6-178.2-50.9-264.8,35.6-264.8c33.1,0,71.3,15.3,86.6,33.1c40.7,48.4,218.9,644.1,203.7,682.3c-7.6,20.4-165.5,86.5-348.8,145.1c-364,119.6-420,117.1-404.8-15.3c7.6-56,35.6-73.8,208.7-132.4l201.1-66.2l-127.3-56c-361.5-155.3-761.2-140-1127.7,40.7c-76.4,38.2-213.8,142.6-305.5,234.2C428.3,2810.8,301,3108.6,301,3459.9c-2.5,972.5,1020.8,1608.9,1886.4,1171c155.3-78.9,226.6-66.2,226.6,38.2c0,66.2-17.8,81.5-165.5,152.7C1943,4967,1601.9,5007.7,1268.4,4933.9z');
 	g.appendChild(path1);
 	
-	$("#svgSwitchRotateMode g").append(path1);
+	document.querySelector('#svgSwitchRotateMode g').appendChild(path1);
 	var path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
 	path2.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
 	path2.setAttribute('id', 'path2');
@@ -946,19 +945,23 @@ function MoveCameraObject(e){
 	document.querySelector('#svgSwitchRotateModeDiv').addEventListener('click', RotateAuto);
 		
 	//表示形式変更
-	$("#menuDisplay button").on("click", function(e){
-		//選択されているボタンの見た目変更
-		$("#menuDisplay button").removeClass("active");
-		$(this).addClass("active");
+	document.querySelector('#menuDisplay').addEventListener("click", function(e){
+		// ボタン以外が押されたら未処理
+		if(e.toElement.id == "menuDisplay") return;
 		
-		var preDisplayStyle = displyStyle;
+		//選択されているボタンの見た目変更
+		buttons = document.querySelectorAll('#menuDisplay button');
+		for(var i = 0; i < buttons.length; i++){
+			buttons[i].classList.remove("active")
+		}
+		e.toElement.classList.add("active");
 		
 		//変更前表示形式に合わせた処理
+		var preDisplayStyle = displyStyle;
 		switch(displyStyle){
 			case "sphere":
 			case "helix":
 				if(autoRotate){
-					debugger;
 					document.querySelector('#svgSwitchRotateModeDiv').click();
 				}
 			case "circle":
@@ -981,9 +984,7 @@ function MoveCameraObject(e){
 		}
 		
 		//新たなスタイル
-		displyStyle = $(e.target).text();
-		indexDisplayStyle = $(this).parent().children().index(this);
-		
+		displyStyle = e.target.textContent;
 		//変更後表示形式に合わせた処理
 		switch(displyStyle){
 			case "sphere":
