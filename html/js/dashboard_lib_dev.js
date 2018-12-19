@@ -776,7 +776,7 @@ function MoveCameraObject(e){
     	d.style.cssText = 'opacity:0; border: 2px solid rgba(127, 127, 127, 0.25);position:absolute;width:575px;height:400px;background: rgba(101,101,101,0.8);color: white;text-align: center;font-size: 48px;border-radius: 8px; top:'+ (window.innerHeight-400)/2 +'px; left:'+ (window.innerWidth-575)/2 +'px;';
     	var s = document.createElement("span");
     	s.style.cssText = 'vertical-align: middle;line-height: 400px;';
-    	s.innerHTML = "リスタート";
+    	s.innerHTML = "restart";
     	d.appendChild(s);
     	document.body.appendChild(d);
     	d3.select("#restartStraight").transition().duration(300).style("opacity",  1).each("end", function() {
