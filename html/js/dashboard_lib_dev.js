@@ -1057,9 +1057,6 @@ function MoveCameraObject(e){
 		}
 	});
 	
-	//検索ウィンドウ
-	$("body").append("<div id='txtSearchResult' style='position:absolute;bottom: 52px;font-size: 12px;left: 120px;color: white;'></div><div id='txtSearch' style='position:absolute;bottom:12px;left:96px;'></div>");
-
 	//初期表示スタイル適用
 	document.querySelector('#menuDisplay button.active').click();
 	
