@@ -124,7 +124,6 @@ ThreeDD.main = function(){
 			controls.dynamicDampingFactor = 0.1;
 			controls.minDistance = 100 * resolutionZoom;   //近づける距離の最小値
 			controls.maxDistance = 6000 * resolutionZoom;
-			controls.addEventListener('change', ReversalPanel);
 	  }
 
 		geometry = new THREE.CubeGeometry( 200, 300, 400 );
@@ -381,41 +380,6 @@ ThreeDD.main = function(){
 		table.position.z = 2000;
 		d['__data__']['table'] = table;
 	}
-	//パネル反転
-	function ReversalPanel(e, callback){
-		var target = $("#menuDisplay button.active").text();
-		if(!borderInside[target]) return;
-		var distance = Math.sqrt(Math.pow(camera.position.x,2) + Math.pow(camera.position.y,2) + Math.pow(camera.position.z,2));
-		if(distance < borderInside[target]*resolutionZoom && !isDirectionInside){
-			isDirectionInside = true;
-			Transform($("#menuDisplay button.active").text() + "_i", 1000, callback); 
-		}else if(distance > borderInside[target]*resolutionZoom && isDirectionInside){
-			isDirectionInside = false;
-			Transform($("#menuDisplay button.active").text(), 1000, callback); 
-		}
-	}
-	//パネル反転(条件逆))
-	function ReversalPanelAntithesis(e, callback){
-		var target = $("#menuDisplay button.active").text();
-		if(!borderInside[target]) return;
-		var distance = Math.sqrt(Math.pow(camera.position.x,2) + Math.pow(camera.position.y,2) + Math.pow(camera.position.z,2));
-		if(distance > borderInside[target]*resolutionZoom && !isDirectionInside){
-			isDirectionInside = true;
-			Transform($("#menuDisplay button.active").text() + "_i", 1000, callback); 
-		}else if(distance < borderInside[target]*resolutionZoom && isDirectionInside){
-			isDirectionInside = false;
-			Transform($("#menuDisplay button.active").text(), 1000, callback); 
-		}
-	}
-	//パネル位置確認
-	function CheackInside(e){
-		var target = $("#menuDisplay button.active").text();
-		if(!borderInside[target]) return false;
-		var distance = Math.sqrt(Math.pow(camera.position.x,2) + Math.pow(camera.position.y,2) + Math.pow(camera.position.z,2));
-		if(distance < borderInside[target]*resolutionZoom){
-			return true;
-		}else return false;
-	}
 
 	function Transform(layout, duration, callback) {
 		TWEEN.removeAll();
@@ -472,8 +436,6 @@ ThreeDD.main = function(){
 			.start();
 	}
 function MoveCameraObject(e){
-		//移動中はパネル反転中止
-		controls.removeEventListener('change', ReversalPanel);
 		
 		//カメラの移動前ポジション
 		var from = {
@@ -487,26 +449,25 @@ function MoveCameraObject(e){
 		else if(dataCount >= 10) margin = 1.25 + 0.023 * (25 - dataCount);
 		else margin = 1.6;
 		
+		var target = document.querySelector('#menuDisplay button.active').textContent;
 		var to = {
-		    x: e[$("#menuDisplay button.active").text()].position.x * margin,
-		    y: e[$("#menuDisplay button.active").text()].position.y * margin,
-		    z: e[$("#menuDisplay button.active").text()].position.z * margin,
+		    x: e[target].position.x * margin,
+		    y: e[target].position.y * margin,
+		    z: e[target].position.z * margin,
 		};
 		var tween = new TWEEN.Tween(from)
-		    .to(to, 300)
-		    .easing(TWEEN.Easing.Linear.None)
-		    .onUpdate(function () {
-		        camera.position.set(this.x, this.y, this.z);
-		        if($("#menuDisplay button.active").text() != "grid")
-		        	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	    .to(to, 300)
+	    .easing(TWEEN.Easing.Linear.None)
+	    .onUpdate(function () {
+	        camera.position.set(this.x, this.y, this.z);
+	        if(target != "grid")
+	        	camera.lookAt(new THREE.Vector3(0, 0, 0));
 			})
-		    .onComplete(function () {
-		        if($("#menuDisplay button.active").text() != "grid")
-		        	camera.lookAt(new THREE.Vector3(0, 0, 0));
-		        ReversalPanel();
-		        controls.addEventListener('change', ReversalPanel);
-		    })
-		    .start();
+	    .onComplete(function () {
+	        if(target != "grid")
+	        	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	    })
+	    .start();
 	}
 	function MoveCameraCircleObject(e){
 		//elementの移動
@@ -578,12 +539,6 @@ function MoveCameraObject(e){
 			//自動回転
 			autoRotate = true;
 			
-			//内側にいるのなら反転させる
-			controls.removeEventListener('change', ReversalPanel);
-			if(CheackInside()){
-				ReversalPanelAntithesis();
-			}
-			
 			//カメラの移動前ポジション
 	    	var from = {
 	            x: camera.position.x,
@@ -640,7 +595,6 @@ function MoveCameraObject(e){
 	  		
 	  		if(!sp){
 		  		controls.enabled = true;
-					controls.addEventListener('change', ReversalPanel);	
 	  		}
 	  		
 			elements.on('click', MoveCameraObject);
@@ -914,7 +868,7 @@ function MoveCameraObject(e){
 		        })
 		        .on("click", function(){
 		    		d3.select("#restartStraight").transition().duration(300).style("opacity",  0).delay(300).remove();
-		    		$('#menuDisplay button.active').trigger("click");
+		    		document.querySelector('#menuDisplay button.active').click();
 		    	});
 	    	});
 	    }, ((timeCount + 2) * straightLength / movementSpeed * 1000 + 1000))
@@ -928,7 +882,7 @@ function MoveCameraObject(e){
 	var filterCategory;
 	var movementSpeed;
 	var straightLength = 1000;
-	var displyStyle;
+	var displyStyle = "helix";
 	var isDirectionInside = false;
 	var isBalloonShow = false;
 	var borderInside = {};
@@ -1009,11 +963,6 @@ function MoveCameraObject(e){
 	/////////////////////////
 	//メイン処理
 	/////////////////////////
-	$("#sb-site").css("z-index", "-1");
-	$("#sb-site").attr("id", "container");
-	$("#dockbar-container").css("display", "none");
-	$("#wrapper, #add-btn-area").css("display", "none");
-	$("#container").css("height", "100%");
 	
 	//パネル表示スタイル変更ボタン
 	if(GetUrlVars().displayStyle !== void(0)){
@@ -1021,18 +970,7 @@ function MoveCameraObject(e){
 	}
 	$("body").append('<div id="menuDisplay"><button>sphere</button><button>helix</button><button>grid</button><button>table</button><button>circle</button><button>straight</button><button>random</button></div>');
 	$("#menuDisplay button:nth-child("+ (indexDisplayStyle+1) +")").addClass("active");
-	displyStyle = hashDisplayStyle[indexDisplayStyle];
 	
-	//時計
-	var _monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-	var _weekNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	var _weekShortNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-	$("body").append("<div id='divTime'></div>");
-    $("#divTime").append("<div><div>"+ _weekNames[new Date().getDay()] +"</div><div>"+ new Date().getFullYear() +"</div><div>Tokyo</div></div>");
-    $("#divTime").append("<div><div>"+ new Date().getDate() +"</div><div>"+ _monthNames[new Date().getMonth()] +".</div><div id='hourMinutes'>"+ new Date().getHours() + ":" + ("0"+new Date().getMinutes()).slice(-2) +"</div></div>");
-	setInterval(function(){
-		$("#hourMinutes").text(new Date().getHours() + ':' + ('0'+new Date().getMinutes()).slice(-2));
-	}, 60000);
 	
 	//データ調整
 	for(var i = 0; i < _data.length; i++) {
@@ -1121,8 +1059,7 @@ function MoveCameraObject(e){
 			case "sphere":
 			case "helix":
 				//内向きか外向きか判定
-				if(CheackInside()) Transform(displyStyle + "_i", 1500);
-				else Transform(displyStyle, 1500);
+				Transform(displyStyle, 1500);
 				
 				//以前がFlyコントローラの場合はコントローラの切替を行う
 				if(preDisplayStyle == "straight") {
@@ -1193,7 +1130,7 @@ function MoveCameraObject(e){
 	$("body").append("<div id='txtSearchResult' style='position:absolute;bottom: 52px;font-size: 12px;left: 120px;color: white;'></div><div id='txtSearch' style='position:absolute;bottom:12px;left:96px;'></div>");
 
 	//初期表示スタイル適用
-	$("#menuDisplay button.active").trigger("click");
+	document.querySelector('#menuDisplay button.active').click();
 	
 	//画面リサイズ
 	window.addEventListener('resize', WindowResize, false);
