@@ -887,12 +887,10 @@ function MoveCameraObject(e){
 	/////////////////////////
 	
 	//パネル表示スタイル変更ボタン
-	if(GetUrlVars().displayStyle !== void(0)){
-		indexDisplayStyle = Number(GetUrlVars().displayStyle);
-	}
-	$("body").append('<div id="menuDisplay"><button>sphere</button><button>helix</button><button>grid</button><button>table</button><button>circle</button><button>straight</button><button>random</button></div>');
-	$("#menuDisplay button:nth-child("+ (indexDisplayStyle+1) +")").addClass("active");
-	
+	var dom = document.createElement("div");
+	dom.setAttribute('id', 'menuDisplay');
+	dom.innerHTML = "<button>sphere</button><button class='active'>helix</button><button>grid</button><button>table</button><button>circle</button><button>straight</button><button>random</button>";
+	document.body.appendChild(dom)
 	
 	//データ調整
 	for(var i = 0; i < _data.length; i++) {
@@ -905,6 +903,10 @@ function MoveCameraObject(e){
 	animate();
 	
 	//自動回転、手動回転切り替えボタン
+	var dom = document.createElement("div");
+	dom.setAttribute('id', 'svgSwitchRotateModeDiv');
+	document.body.appendChild(dom);
+	
 	var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
 	svg.setAttribute('width', '40px');
@@ -913,13 +915,15 @@ function MoveCameraObject(e){
 	svg.setAttribute('class', 'tooltipIcon');
 	svg.setAttribute('title', 'ChangeViewMode');
 	svg.setAttribute('style', 'position: absolute;bottom: 18px;left: 30px;border-radius: 30px;background: rgba(0,0,0,0.3);');
-	$("body").append(svg);
+	dom.appendChild(svg);
+	
 	var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 	g.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
 	g.setAttribute('transform', 'translate(8,20)scale(0.0025,-0.0025)');
 	g.setAttribute('class', 'tooltipIcon');
 	g.setAttribute('title', 'ChangeViewMode');
-	$("#svgSwitchRotateMode").append(g);
+	svg.appendChild(g);
+
 	var path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
 	path1.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
 	path1.setAttribute('id', 'path1');
@@ -927,6 +931,8 @@ function MoveCameraObject(e){
 	path1.setAttribute('class', 'tooltipIcon');
 	path1.setAttribute('title', 'ChangeViewMode');
 	path1.setAttribute('d', 'M1268.4,4933.9c-269.8-56-519.3-196-725.5-402.2c-491.3-491.3-583-1232.1-229.1-1838c94.2-160.4,346.2-412.4,506.6-506.6c422.6-246.9,949.6-280,1382.3-89.1c58.5,25.5,109.5,38.2,109.5,28c0-10.2-22.9-86.6-50.9-170.6c-63.6-178.2-50.9-264.8,35.6-264.8c33.1,0,71.3,15.3,86.6,33.1c40.7,48.4,218.9,644.1,203.7,682.3c-7.6,20.4-165.5,86.5-348.8,145.1c-364,119.6-420,117.1-404.8-15.3c7.6-56,35.6-73.8,208.7-132.4l201.1-66.2l-127.3-56c-361.5-155.3-761.2-140-1127.7,40.7c-76.4,38.2-213.8,142.6-305.5,234.2C428.3,2810.8,301,3108.6,301,3459.9c-2.5,972.5,1020.8,1608.9,1886.4,1171c155.3-78.9,226.6-66.2,226.6,38.2c0,66.2-17.8,81.5-165.5,152.7C1943,4967,1601.9,5007.7,1268.4,4933.9z');
+	g.appendChild(path1);
+	
 	$("#svgSwitchRotateMode g").append(path1);
 	var path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
 	path2.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
@@ -935,8 +941,9 @@ function MoveCameraObject(e){
 	path2.setAttribute('title', 'ChangeViewMode');
 	path2.setAttribute('style', 'fill:rgb(256,256,256);');
 	path2.setAttribute('d', 'M3442.4,4188c-157.8-71.3-302.9-216.4-366.6-366.6c-114.6-259.7-122.2-231.6,570.2-2466.8c343.7-1117.5,626.2-2036.6,626.2-2046.7c0-7.6-96.7,73.8-213.8,185.8C3495.9,18.2,2966.4,127.6,2594.7-208.4c-162.9-147.6-241.8-323.3-241.8-547.3c0-252,78.9-389.5,381.9-669.5c325.8-302.9,595.7-608.4,990.3-1127.8c641.5-837.5,1036.1-1143,1952.6-1499.4c173.1-66.2,338.6-145.1,366.6-173.1c30.6-30.5,78.9-137.5,109.5-239.3c45.8-152.7,68.7-193.5,137.5-234.2c45.8-28,112-50.9,152.7-50.9c38.2,0,794.3,224,1680.2,496.4c1710.7,524.4,1695.4,519.3,1738.7,689.9c10.2,35.6-12.7,165.5-53.5,310.6l-68.7,249.5l53.5,264.7c183.3,921.5,132.4,1662.3-178.2,2558.4c-50.9,155.3-211.3,577.9-353.9,939.4c-142.5,364-315.7,827.3-384.4,1031c-140,407.3-208.8,532-364.1,636.4c-142.5,96.7-252,129.8-422.6,129.8c-208.8,0-371.7-63.6-511.7-203.7l-117.1-117.1l-58.5,109.5c-106.9,203.7-323.3,338.6-575.3,358.9c-226.6,17.8-389.5-43.3-565.1-213.8l-140-134.9l-61.1,73.8c-33.1,40.7-127.3,106.9-206.2,145.1c-119.7,58.5-178.2,71.3-323.3,68.7c-229.1-2.6-381.9-73.8-542.2-254.6L4868,2253.3l-211.3,692.4c-117.1,381.9-236.8,753.5-264.8,829.9c-63.6,175.6-198.6,325.8-361.5,399.7C3867.5,4254.2,3597.7,4259.3,3442.4,4188z M3898.1,3790.9c28-17.8,63.6-53.4,81.5-81.5c17.8-25.5,244.4-738.3,506.6-1586c262.2-847.7,496.4-1568.1,521.9-1603.8c145.1-201.1,455.7-147.6,532.1,91.7c30.6,96.7,22.9,127.3-147.6,682.2c-96.7,320.7-178.2,611-178.2,649.2c0,173.1,185.8,323.3,364,300.4c183.3-25.5,229.1-101.8,397.1-636.4c81.4-262.2,168-498.9,193.5-527c99.3-109.5,323.3-86.5,407.3,40.7c58.5,89.1,48.4,196-50.9,516.8c-101.8,333.5-106.9,392-38.2,504c68.7,114.6,185.8,168,325.8,152.7c188.4-20.4,236.7-94.2,386.9-577.9c150.2-483.7,201.1-560.1,384.4-560.1c84,0,119.6,15.3,190.9,86.6c101.8,101.8,109.5,173.1,33.1,386.9c-86.6,252-28,422.6,175.6,511.7c109.5,45.8,259.7,7.6,343.7-91.6c33.1-40.7,119.6-244.4,190.9-455.7c73.8-211.3,208.8-575.3,300.4-812.1c555-1412.9,641.5-1726,664.4-2387.9c15.3-407.3-7.6-667-99.3-1125.2l-56-282.6l53.5-201.1c30.5-109.5,48.3-203.7,43.3-208.7c-28-30.6-2874.1-891-2886.8-873.2c-10.2,10.2-38.2,73.8-63.6,142.6c-76.4,206.2-188.4,292.8-575.3,445.5c-896.1,353.8-1275.4,639-1825.3,1369.6c-394.6,521.9-705.2,875.7-1132.8,1272.8C2750-885.6,2714.3-791.4,2775.4-631c53.5,140,178.2,216.4,341.1,203.7c277.5-22.9,598.2-254.6,1036.1-753.5c137.5-155.3,280-300.4,315.7-323.3c119.6-78.9,364,12.7,399.7,150.2c10.2,40.7-224,837.5-725.5,2461.7c-567.7,1848.2-735.7,2420.9-723,2484.6c17.8,94.2,140,229.1,224,244.4C3719.9,3852,3842.1,3829.1,3898.1,3790.9z');
-	$("#svgSwitchRotateMode g").append(path2);
-	$("#svgSwitchRotateMode").on("click", RotateAuto);
+	g.appendChild(path2);
+	
+	document.querySelector('#svgSwitchRotateModeDiv').addEventListener('click', RotateAuto);
 		
 	//表示形式変更
 	$("#menuDisplay button").on("click", function(e){
@@ -951,7 +958,8 @@ function MoveCameraObject(e){
 			case "sphere":
 			case "helix":
 				if(autoRotate){
-					$("#svgSwitchRotateMode").trigger("click");
+					debugger;
+					document.querySelector('#svgSwitchRotateModeDiv').click();
 				}
 			case "circle":
 				oldTimeCircle += (clockCircle.getElapsedTime()/500);
@@ -998,7 +1006,7 @@ function MoveCameraObject(e){
 				
 				if(!autoRotate){
 					setTimeout(function(){
-						$("#svgSwitchRotateMode").trigger("click");
+						document.querySelector('#svgSwitchRotateModeDiv').click();
 					}, 2000)
 				}
 				
