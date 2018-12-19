@@ -103,7 +103,7 @@ div.styled-select.blue.semi-square{
 
 #menuDisplay {
     position: absolute;
-    bottom: 20px;
+    top: 16px;
     width: 100%;
     text-align: center;
 }
