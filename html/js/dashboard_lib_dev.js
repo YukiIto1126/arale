@@ -780,22 +780,18 @@ function MoveCameraObject(e){
     	d.appendChild(s);
     	document.body.appendChild(d);
     	d3.select("#restartStraight").transition().duration(300).style("opacity",  1).each("end", function() {
-    		$("#restartStraight").on('mouseover', function(e){
-	        	$(this).css({
-	        		"box-shadow": "0px 0px 12px rgba(256, 256, 256, 0.75)",
-	        		"border": "1px solid rgba(127, 127, 127, 0.25)",
-	        	});
-	        })
-	        .on('mouseout', function(e){
-	        	$(this).css({
-	        		"box-shadow": "none",
-	        		"border": "2px solid rgba(127, 127, 127, 0.25)",
-	        	});
-	        })
-	        .on("click", function(){
+    		document.querySelector('#restartStraight').addEventListener('mouseover', function(e){
+	        this.style.boxShadow = "0px 0px 12px rgba(256, 256, 256, 0.75)";
+        	this.style.border = "1px solid rgba(127, 127, 127, 0.25)";
+	      });
+	      document.querySelector('#restartStraight').addEventListener('mouseout', function(e){
+		      this.style.boxShadow = "none";
+        	this.style.border = "2px solid rgba(127, 127, 127, 0.25)";
+	      })
+	      document.querySelector('#restartStraight').addEventListener('click', function(e){
 	    		d3.select("#restartStraight").transition().duration(300).style("opacity",  0).delay(300).remove();
 	    		document.querySelector('#menuDisplay button.active').click();
-	    	});
+		    });
     	});
     }, ((timeCount + 2) * straightLength / movementSpeed * 1000 + 1000))
 	}
