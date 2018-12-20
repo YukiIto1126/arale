@@ -131,7 +131,9 @@ ThreeDD.main = function(){
 		///////////////////////////////////////////////
 		//ミニグラフ定義
 		///////////////////////////////////////////////
-		scene2 = new THREE.Scene();
+		sceneOtherStamp = new THREE.Scene();
+		sceneMyStamp = new THREE.Scene();
+		
 		//ミニグラフのサイズ定義
     var width  = 230 * resolutionZoom,
         height = 160 * resolutionZoom;
@@ -154,7 +156,7 @@ ThreeDD.main = function(){
 					},
 					"background-attachment": "fixed",
 					"background-repeat": "no-repeat",
-					"opacity": "0"
+					"opacity": "1"
 				});
 	    		
 		//座標を設定
@@ -168,16 +170,16 @@ ThreeDD.main = function(){
 		let list = document.getElementsByClassName('fuga');
 		for (let elm of elements[0]) {
 			object = new THREE.CSS3DObject(elm);
-		    object.position.fromArray(elm['__data__'].helix.position);
-		    object.rotation.fromArray(elm['__data__'].helix.rotation);
-		    scene2.add(object);
+	    object.position.fromArray(elm['__data__'].helix.position);
+	    object.rotation.fromArray(elm['__data__'].helix.rotation);
+	    sceneOtherStamp.add(object);
 		}
 		
-		renderer2 = new THREE.CSS3DRenderer();
-		renderer2.setSize( window.innerWidth, window.innerHeight );
-		renderer2.domElement.style.position = 'absolute';
-		renderer2.domElement.style.top = 0;
-		document.getElementById('container').appendChild(renderer2.domElement);
+		rendererOtherStamp = new THREE.CSS3DRenderer();
+		rendererOtherStamp.setSize( window.innerWidth, window.innerHeight );
+		rendererOtherStamp.domElement.style.position = 'absolute';
+		rendererOtherStamp.domElement.style.top = 0;
+		document.getElementById('container').appendChild(rendererOtherStamp.domElement);
 		
 		displayHiddenElements(true);
 	}
@@ -236,7 +238,7 @@ ThreeDD.main = function(){
 			theta = oldTimeCircle + (clockCircle.getElapsedTime()/(5*dataCount)) ;
 			r = 40 * dataCount;
 			
-			for (let i = 0; i < scene2.children.length; i++) {
+			for (let i = 0; i < sceneOtherStamp.children.length; i++) {
 				var circle = new THREE.Object3D();
 				var vector = new THREE.Vector3();
 				var phi = 2 * i/dataCount * Math.PI + theta;
@@ -248,14 +250,15 @@ ThreeDD.main = function(){
 				vector.z = Math.SQRT2 * r * Math.cos(phi_dash) * resolutionZoom;
 				circle.lookAt(vector);
 				
-				scene2.children[i].position.set(circle.position.x, circle.position.y, circle.position.z);
-				scene2.children[i].rotation.set(circle.rotation.x, circle.rotation.y, circle.rotation.z);	
+				sceneOtherStamp.children[i].position.set(circle.position.x, circle.position.y, circle.position.z);
+				sceneOtherStamp.children[i].rotation.set(circle.rotation.x, circle.rotation.y, circle.rotation.z);	
 			}
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 		}
 		
 		TWEEN.update();
-		renderer2.render( scene2, camera );
+		rendererOtherStamp.render( sceneOtherStamp, camera );
+		rendererOtherStamp.render( sceneMyStamp, camera );
 	}
 
 	function WindowResize() {
@@ -394,7 +397,7 @@ ThreeDD.main = function(){
 			.style('display', "block");
 		
 		//パネルの移動
-		for (let i = 0; i < scene2.children.length; i++) {
+		for (let i = 0; i < sceneOtherStamp.children.length; i++) {
 			var newPos;
 			var newRot;
 			
@@ -414,16 +417,17 @@ ThreeDD.main = function(){
 				newRot = circle.rotation;
 				
 			}else{
-				newPos = scene2.children[i].element.__data__[layout].position;
-				newRot = scene2.children[i].element.__data__[layout].rotation;
+				newPos = sceneOtherStamp.children[i].element.__data__[layout].position;
+				newRot = sceneOtherStamp.children[i].element.__data__[layout].rotation;
 			}
-			
-			var coords = new TWEEN.Tween(scene2.children[i].position)
+				
+			//スタンプ移動処理
+			var coords = new TWEEN.Tween(sceneOtherStamp.children[i].position)
 			    .to({x: newPos.x, y: newPos.y, z: newPos.z}, Math.random() * duration + duration)
 			    .easing(TWEEN.Easing.Exponential.InOut)
 			    .start();
 			
-			var rotate = new TWEEN.Tween(scene2.children[i].rotation)
+			var rotate = new TWEEN.Tween(sceneOtherStamp.children[i].rotation)
 			    .to({x: newRot.x, y: newRot.y, z: newRot.z}, Math.random() * duration + duration)
 			    .easing(TWEEN.Easing.Exponential.InOut)
 			    .start();
@@ -476,7 +480,7 @@ function MoveCameraObject(e){
 		isAnimateCircle = false;
 		r = 40 * dataCount;
 		
-		for (let i = 0; i < scene2.children.length; i++) {
+		for (let i = 0; i < sceneOtherStamp.children.length; i++) {
 			var circle = new THREE.Object3D();
 			var vector = new THREE.Vector3();
 			var phi = 2 * i/dataCount * Math.PI + theta;
@@ -501,8 +505,8 @@ function MoveCameraObject(e){
 			    .to(to, 300)
 			    .easing(TWEEN.Easing.Linear.None)
 			    .onUpdate(function () {
-			        scene2.children[i].position.set(this.x_pos, this.y_pos, this.z_pos);
-			        scene2.children[i].rotation.set(this.x_rot, this.y_rot, this.z_rot);
+			        sceneOtherStamp.children[i].position.set(this.x_pos, this.y_pos, this.z_pos);
+			        sceneOtherStamp.children[i].rotation.set(this.x_rot, this.y_rot, this.z_rot);
 				})
 				.start();
 		}
@@ -812,7 +816,8 @@ function MoveCameraObject(e){
 	var dataCount;
 	var camera;
 	var geometry, mesh;
-	var scene2, renderer2;
+	var sceneOtherStamp, rendererOtherStamp;
+	var sceneMyStamp, rendererMyStamp;	
 	var controls, gcontrols;
 	var clockAutoRotate = new THREE.Clock(false);
 	var clockCircle = new THREE.Clock(false);
@@ -1060,13 +1065,13 @@ function MoveCameraObject(e){
 	window.addEventListener('resize', WindowResize, false);
 	    
 	// 	スタンプ送信機能
-/*
-  $("#sendstamp .stamp img").on("click", function(i, e){
+	document.querySelector("#sendstamp").addEventListener('click', function(e){
+
 	  //ミニグラフのサイズ定義
     var width  = 230 * resolutionZoom,
         height = 160 * resolutionZoom;
 	  //新規投稿データ生成
-	  var newData = [{"img":i.currentTarget.getAttribute("src")}];
+	  var newData = [{"img":e.target.getAttribute("src")}];
 	  //グラフ描画用のDIV生成
     var newElements = d3.selectAll('.elementNew')
         .data(newData).enter()
@@ -1080,16 +1085,28 @@ function MoveCameraObject(e){
 					},
 					"background-attachment": "fixed",
 					"background-repeat": "no-repeat",
-					"opacity": "0"
-				});
+					"opacity": "1"
+				})
+				.transition()
+				.duration(3000)
+				.delay(100)
+				.style('opacity', '1');
 	    		
 		//座標を設定
 		var newPosition = new THREE.Object3D();
-		vector = new THREE.Vector3();
+		vector = new THREE.Vector3(0,0,0);
+		
+/*
 		newPosition.position.x = camera.position.x;
 		newPosition.position.y = camera.position.y;
-		newPosition.position.z = camera.position.z - 16;
-		newPosition.lookAt(new THREE.Vector3(0, 0, 0));
+		newPosition.position.z = camera.position.z;
+*/
+		
+		newPosition.position.x = -width/2;
+		newPosition.position.y = 0;
+		newPosition.position.z = 1000;
+		
+		newPosition.lookAt(camera.position);
 		newData[0]['newPosition'] = newPosition;
 		
 		//シーンへの初期配置処理
@@ -1097,10 +1114,9 @@ function MoveCameraObject(e){
 			object = new THREE.CSS3DObject(newElements[0][i]);
 		    object.position.fromArray(newElements[0][i]['__data__'].newPosition.position);
 		    object.rotation.fromArray(newElements[0][i]['__data__'].newPosition.rotation);
-		    scene2.add(object);
+		    sceneMyStamp.add(object);
 		}
   });
-*/
 	
 	this.finished=true;
 }
