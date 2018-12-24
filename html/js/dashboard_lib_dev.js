@@ -1,15 +1,16 @@
 //クラス定義
 var ThreeDD = {};
-ThreeDD.finished = false;
 ThreeDD.main = function(){
 	
 	// userAgentの判定
-	var sp;
+	var sp = false;
 	var ua = navigator.userAgent;
     if (ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0) {
         var sp = true;
+        autoRotate = false;
     }else if(ua.indexOf('iPad') > 0 || ua.indexOf('Android') > 0){
         var sp = true;
+        autoRotate = false;
     }
 	
 	//外部CSS読込
@@ -29,9 +30,6 @@ ThreeDD.main = function(){
 		head.appendChild(link);
 	}
 	loadCss(MakePath("css/dashboard.css"));
-	
-	//画面リサイズで再実行されないように(暫定対応)
-	if(this.finished) return
 	
 	// 	データの作成
 	var _data = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];
@@ -132,7 +130,7 @@ ThreeDD.main = function(){
 		//ミニグラフ定義
 		///////////////////////////////////////////////
 		sceneOtherStamp = new THREE.Scene();
-		sceneMyStamp = new THREE.Scene();
+// 		sceneMyStamp = new THREE.Scene();
 		
 		//ミニグラフのサイズ定義
     var width  = 230 * resolutionZoom,
@@ -180,6 +178,12 @@ ThreeDD.main = function(){
 		rendererOtherStamp.domElement.style.position = 'absolute';
 		rendererOtherStamp.domElement.style.top = 0;
 		document.getElementById('container').appendChild(rendererOtherStamp.domElement);
+		
+		rendererMyStamp = new THREE.CSS3DRenderer();
+		rendererMyStamp.setSize( window.innerWidth, window.innerHeight );
+		rendererMyStamp.domElement.style.position = 'absolute';
+		rendererMyStamp.domElement.style.top = 0;
+		document.getElementById('container').appendChild(rendererMyStamp.domElement);
 		
 		displayHiddenElements(true);
 	}
@@ -256,9 +260,24 @@ ThreeDD.main = function(){
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 		}
 		
+		// 		自分が送ったスタンプのアニメーション narumi
+		if(newElements) {
+			ne = sceneOtherStamp.children.filter(f=>f.element.classList[0] == "elementNew");
+			for (let i = 0; i < ne.length; i++) {
+				var newPosition = new THREE.Object3D();
+				console.log(ne[i].position.z);
+				newPosition.position.set(ne[i].position.x, 0, ne[i].position.z-60);
+				newPosition.lookAt(camera.position);
+				
+				ne[i].position.set(newPosition.position.x, newPosition.position.y, newPosition.position.z);
+				ne[i].rotation.set(newPosition.rotation.x, newPosition.rotation.y, newPosition.rotation.z);	
+// 				ne[i].element.style.opacity = ne[i].element.style.opacity * 0.95;
+			}
+		}
+		
 		TWEEN.update();
 		rendererOtherStamp.render( sceneOtherStamp, camera );
-		rendererOtherStamp.render( sceneMyStamp, camera );
+// 		rendererMyStamp.render( sceneMyStamp, camera );
 	}
 
 	function WindowResize() {
@@ -538,10 +557,17 @@ function MoveCameraObject(e){
 		    })
 		    .start();
 	}
+	
+	function clickSvgSwitchRotateModeDiv(){
+		if (!sp){
+			autoRotate = !autoRotate;
+			RotateAuto();	
+		}
+	}
+	
 	function RotateAuto(){
-		if(!autoRotate){
+		if(autoRotate){
 			//自動回転
-			autoRotate = true;
 			
 			//カメラの移動前ポジション
 	    	var from = {
@@ -575,13 +601,13 @@ function MoveCameraObject(e){
 	        })
 	        .onComplete(function () {
 	        	//パネル反転
-	            isAnimateHand = false;
-	        	controls.enabled = false;
-	            	        	
-	            elements.on('click',null);
-	            
-	            clockAutoRotate.start();
-	  			isAnimateAuto = true;
+            isAnimateHand = false;
+            if(!sp)controls.enabled = false;
+            
+            elements.on('click',null);
+            
+            clockAutoRotate.start();
+						isAnimateAuto = true;
 		  	})
 	        .start();
 	    
@@ -604,7 +630,6 @@ function MoveCameraObject(e){
 			elements.on('click', MoveCameraObject);
 
 	  		isAnimateHand = true;
-	  		autoRotate = false;
 	  		
 	  		//SVG変形アニメーション
 				d3.select("#path1").transition().duration(1000)
@@ -685,22 +710,22 @@ function MoveCameraObject(e){
 		    .onComplete(function () {
 		    	setTimeout(function(){
 					
-					controls = null;
-					controls = new THREE.FlyControls(camera);
-				    controls.movementSpeed = movementSpeed;//移動速度
-					controls.rollSpeed = 0;   //回転速度
-					controls.autoForward = true;         //true:自動で移動する,false:自動で移動しない
-					controls.dragToLook = true;
-					//キーダウンでの移動を不可能にする
-					controls.dispose();
-					
-					elements.on('click', null);
-					isAnimateFly = true;
-					
-					setTimeout(function(){
-						controls.moveVector.z = -1;
-						HideAutoPanel();
-					}, 500)
+						controls = null;
+						controls = new THREE.FlyControls(camera);
+					    controls.movementSpeed = movementSpeed;//移動速度
+						controls.rollSpeed = 0;   //回転速度
+						controls.autoForward = true;         //true:自動で移動する,false:自動で移動しない
+						controls.dragToLook = true;
+						//キーダウンでの移動を不可能にする
+						controls.dispose();
+						
+						elements.on('click', null);
+						isAnimateFly = true;
+						
+						setTimeout(function(){
+							controls.moveVector.z = -1;
+							HideAutoPanel();
+						}, 500)
 	    		}, 500)
 		    })
 		    .start();
@@ -803,7 +828,7 @@ function MoveCameraObject(e){
 	/////////////////////////
 	//変数
 	/////////////////////////
-	
+	var elements, newElements;
 	var filterCnt = 0;
 	var filterCategory;
 	var movementSpeed;
@@ -822,7 +847,7 @@ function MoveCameraObject(e){
 	var clockAutoRotate = new THREE.Clock(false);
 	var clockCircle = new THREE.Clock(false);
 	var clockFly = new THREE.Clock(false);
-	var autoRotate = true; //自動回転フラグ
+	var autoRotate = false; //自動回転フラグ
 	var oldTimeSeconds = 0;
 	var oldTimeCircle = 0;
 	var resolutionZoom = 2.5; //解像度
@@ -943,7 +968,7 @@ function MoveCameraObject(e){
 	path2.setAttribute('d', 'M3442.4,4188c-157.8-71.3-302.9-216.4-366.6-366.6c-114.6-259.7-122.2-231.6,570.2-2466.8c343.7-1117.5,626.2-2036.6,626.2-2046.7c0-7.6-96.7,73.8-213.8,185.8C3495.9,18.2,2966.4,127.6,2594.7-208.4c-162.9-147.6-241.8-323.3-241.8-547.3c0-252,78.9-389.5,381.9-669.5c325.8-302.9,595.7-608.4,990.3-1127.8c641.5-837.5,1036.1-1143,1952.6-1499.4c173.1-66.2,338.6-145.1,366.6-173.1c30.6-30.5,78.9-137.5,109.5-239.3c45.8-152.7,68.7-193.5,137.5-234.2c45.8-28,112-50.9,152.7-50.9c38.2,0,794.3,224,1680.2,496.4c1710.7,524.4,1695.4,519.3,1738.7,689.9c10.2,35.6-12.7,165.5-53.5,310.6l-68.7,249.5l53.5,264.7c183.3,921.5,132.4,1662.3-178.2,2558.4c-50.9,155.3-211.3,577.9-353.9,939.4c-142.5,364-315.7,827.3-384.4,1031c-140,407.3-208.8,532-364.1,636.4c-142.5,96.7-252,129.8-422.6,129.8c-208.8,0-371.7-63.6-511.7-203.7l-117.1-117.1l-58.5,109.5c-106.9,203.7-323.3,338.6-575.3,358.9c-226.6,17.8-389.5-43.3-565.1-213.8l-140-134.9l-61.1,73.8c-33.1,40.7-127.3,106.9-206.2,145.1c-119.7,58.5-178.2,71.3-323.3,68.7c-229.1-2.6-381.9-73.8-542.2-254.6L4868,2253.3l-211.3,692.4c-117.1,381.9-236.8,753.5-264.8,829.9c-63.6,175.6-198.6,325.8-361.5,399.7C3867.5,4254.2,3597.7,4259.3,3442.4,4188z M3898.1,3790.9c28-17.8,63.6-53.4,81.5-81.5c17.8-25.5,244.4-738.3,506.6-1586c262.2-847.7,496.4-1568.1,521.9-1603.8c145.1-201.1,455.7-147.6,532.1,91.7c30.6,96.7,22.9,127.3-147.6,682.2c-96.7,320.7-178.2,611-178.2,649.2c0,173.1,185.8,323.3,364,300.4c183.3-25.5,229.1-101.8,397.1-636.4c81.4-262.2,168-498.9,193.5-527c99.3-109.5,323.3-86.5,407.3,40.7c58.5,89.1,48.4,196-50.9,516.8c-101.8,333.5-106.9,392-38.2,504c68.7,114.6,185.8,168,325.8,152.7c188.4-20.4,236.7-94.2,386.9-577.9c150.2-483.7,201.1-560.1,384.4-560.1c84,0,119.6,15.3,190.9,86.6c101.8,101.8,109.5,173.1,33.1,386.9c-86.6,252-28,422.6,175.6,511.7c109.5,45.8,259.7,7.6,343.7-91.6c33.1-40.7,119.6-244.4,190.9-455.7c73.8-211.3,208.8-575.3,300.4-812.1c555-1412.9,641.5-1726,664.4-2387.9c15.3-407.3-7.6-667-99.3-1125.2l-56-282.6l53.5-201.1c30.5-109.5,48.3-203.7,43.3-208.7c-28-30.6-2874.1-891-2886.8-873.2c-10.2,10.2-38.2,73.8-63.6,142.6c-76.4,206.2-188.4,292.8-575.3,445.5c-896.1,353.8-1275.4,639-1825.3,1369.6c-394.6,521.9-705.2,875.7-1132.8,1272.8C2750-885.6,2714.3-791.4,2775.4-631c53.5,140,178.2,216.4,341.1,203.7c277.5-22.9,598.2-254.6,1036.1-753.5c137.5-155.3,280-300.4,315.7-323.3c119.6-78.9,364,12.7,399.7,150.2c10.2,40.7-224,837.5-725.5,2461.7c-567.7,1848.2-735.7,2420.9-723,2484.6c17.8,94.2,140,229.1,224,244.4C3719.9,3852,3842.1,3829.1,3898.1,3790.9z');
 	g.appendChild(path2);
 	
-	document.querySelector('#svgSwitchRotateModeDiv').addEventListener('click', RotateAuto);
+	document.querySelector('#svgSwitchRotateModeDiv').addEventListener('click', clickSvgSwitchRotateModeDiv);
 		
 	//表示形式変更
 	document.querySelector('#menuDisplay').addEventListener("click", function(e){
@@ -1006,7 +1031,7 @@ function MoveCameraObject(e){
 				
 				d3.select("#svgSwitchRotateMode").transition().duration(300).style("opacity", "1");
 				
-				if(!autoRotate){
+				if(!autoRotate && !sp){
 					setTimeout(function(){
 						document.querySelector('#svgSwitchRotateModeDiv').click();
 					}, 2000)
@@ -1065,59 +1090,60 @@ function MoveCameraObject(e){
 	window.addEventListener('resize', WindowResize, false);
 	    
 	// 	スタンプ送信機能
+	var myStamps = [];
 	document.querySelector("#sendstamp").addEventListener('click', function(e){
 
 	  //ミニグラフのサイズ定義
     var width  = 230 * resolutionZoom,
         height = 160 * resolutionZoom;
 	  //新規投稿データ生成
-	  var newData = [{"img":e.target.getAttribute("src")}];
+	  var newData = {"img":e.target.getAttribute("src")};
+	  myStamps.push(newData);
 	  //グラフ描画用のDIV生成
-    var newElements = d3.selectAll('.elementNew')
-        .data(newData).enter()
-        .append('div')
-        .attr('class', 'elementNew')
-        .style({
-	        "width":width + "px",
-	        "height": height + "px",
-					"background": function(e, i){
-							return "url('"+e.img+"')"
-					},
-					"background-attachment": "fixed",
-					"background-repeat": "no-repeat",
-					"opacity": "1"
-				})
-				.transition()
-				.duration(3000)
-				.delay(100)
-				.style('opacity', '1');
+    newElements = d3.selectAll('.elementNew')
+	    .data(myStamps).enter()
+	    .append('div')
+	    .attr('class', 'elementNew')
+	    .style({
+	      "width":width + "px",
+	      "height": height + "px",
+				"background": function(e, i){
+						return "url('"+e.img+"')"
+				},
+				"background-attachment": "fixed",
+				"background-repeat": "no-repeat",
+				"opacity": "1"
+			})
+			.transition()
+			.duration(3000)
+			.delay(100)
+			.style('opacity', '0')
+			.remove()
+			.each("end", function(e) { 
+				newElements[0].shift();
+			});
+				
 	    		
 		//座標を設定
 		var newPosition = new THREE.Object3D();
 		vector = new THREE.Vector3(0,0,0);
 		
-/*
 		newPosition.position.x = camera.position.x;
-		newPosition.position.y = camera.position.y;
-		newPosition.position.z = camera.position.z;
-*/
-		
-		newPosition.position.x = -width/2;
 		newPosition.position.y = 0;
-		newPosition.position.z = 1000;
+		newPosition.position.z = camera.position.z;
 		
-		newPosition.lookAt(camera.position);
-		newData[0]['newPosition'] = newPosition;
+		newPosition.lookAt(vector);
+		myStamps[myStamps.length-1]['newPosition'] = newPosition.position;
 		
 		//シーンへの初期配置処理
-		for(var i = 0; i < newElements[0].length; i++) {
-			object = new THREE.CSS3DObject(newElements[0][i]);
-		    object.position.fromArray(newElements[0][i]['__data__'].newPosition.position);
-		    object.rotation.fromArray(newElements[0][i]['__data__'].newPosition.rotation);
-		    sceneMyStamp.add(object);
-		}
+		var object = new THREE.CSS3DObject(newElements[0][myStamps.length-1]);
+    object.position.fromArray(newPosition.position);
+    object.rotation.fromArray(newPosition.rotation);
+    sceneOtherStamp.add(object);
+    
+    object.position.set(newPosition.position.x,newPosition.position.y,newPosition.position.z);
+    object.rotation.set(newPosition.rotation.x,newPosition.rotation.y,newPosition.rotation.z);
+    
   });
-	
-	this.finished=true;
 }
 window.ThreeDD = ThreeDD;
