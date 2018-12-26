@@ -423,7 +423,7 @@ ThreeDD.main = function(){
 			//ARジグザグ配置
 			var helix = new THREE.Object3D();
 			
-			var stx = 8000 - 4000 *elm['__data__']['set'];
+			var stx = 3000 - 1000 *elm['__data__']['set'];
 			var sty = 2500 - elm['__data__']['index'] * 100;
 			var stz = -6400;
 			
