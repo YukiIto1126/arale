@@ -90,7 +90,156 @@ ThreeDD.main = function(){
 	      {"team1":1,"team2":0},
 	      {"team1":0,"team2":1},
 	      {"team1":0,"team2":1},
-	      
+	    ],[
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	    ],[
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	    ],[
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0},
+	      {"team1":0,"team2":1},
+	      {"team1":0,"team2":1},
 	    ],[
 	      {"team1":1,"team2":0},
 	      {"team1":0,"team2":1},
@@ -233,8 +382,8 @@ ThreeDD.main = function(){
 // 		sceneMyStamp = new THREE.Scene();
 		
 		//ミニグラフのサイズ定義
-    var width  = 24 * resolutionZoom,
-        height = 24 * resolutionZoom;
+    var width  = 36 * resolutionZoom,
+        height = 36 * resolutionZoom;
 	        
 		//グラフ描画用のDIV生成 narumi
     elements = d3.selectAll('.element')
@@ -247,8 +396,8 @@ ThreeDD.main = function(){
         .style({
 	        "width":width + "px",
 	        "height": height + "px",
-	        "font-size": "24px",
-	        "border-radius": "24px",
+	        "font-size": "48px",
+	        "border-radius": "48px",
 	        "color": "rgba(255, 255, 255, 0.75)",
 	        "text-alain": "center",
 					"background": "rgba(0, 0, 0, 0.75)",
@@ -271,16 +420,24 @@ ThreeDD.main = function(){
 			random.position.z = (Math.random() * 4000 - 2000)*resolutionZoom;
 			elm['__data__']['random'] = random;
 			
-			//螺旋_外向き
-			var vector, phi, theta;
+			//ARジグザグ配置
 			var helix = new THREE.Object3D();
-			vector = new THREE.Vector3();
 			
-			helix.position.x = 2700 - (5 - elm['__data__']['set']) * 900 + (elm['__data__']['team1'] == 1 ? -50 : 50);
-			helix.position.y = 2500 - elm['__data__']['index'] * 100;
-			helix.position.z = -800;
+			var stx = 8000 - 4000 *elm['__data__']['set'];
+			var sty = 2500 - elm['__data__']['index'] * 100;
+			var stz = -6400;
 			
-			helix.lookAt(camera.position);
+			var atanSitaXZ = Math.atan(Math.abs(stx) / Math.abs(stz)) * 1.5;
+			var atanSitaYZ = Math.atan(Math.abs(sty) / Math.abs(stz)) * 1.5;
+			
+			var teamDiffX = (elm['__data__']['team1'] == 1 ? -48 : 48) * Math.cos(atanSitaXZ);
+			var teamDiffZ = (elm['__data__']['team1'] == 1 ? -48 : 48) * Math.sin(atanSitaXZ);
+			
+			helix.position.x = teamDiffX + (stx <= 0 ? Math.sin(atanSitaXZ) * Math.abs(stz) : Math.sin(atanSitaXZ) * stz);
+			helix.position.y = sty >= 0 ? Math.sin(atanSitaYZ) * Math.abs(stz) : Math.sin(atanSitaYZ) * stz;
+			helix.position.z = teamDiffZ + Math.abs(Math.cos(atanSitaXZ)) * stz;
+			
+			helix.lookAt(new THREE.Vector3());
 			elm['__data__']['helix'] = helix;
 		}
 		
@@ -290,6 +447,7 @@ ThreeDD.main = function(){
 			object = new THREE.CSS3DObject(elm);
 	    object.position.fromArray(elm['__data__'].helix.position);
 	    object.rotation.fromArray(elm['__data__'].helix.rotation);
+	    console.log(elm['__data__'].helix.position);
 	    sceneOtherStamp.add(object);
 		}
 		
