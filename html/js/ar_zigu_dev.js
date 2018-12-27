@@ -355,11 +355,11 @@ ThreeDD.main = function(){
 	function init() {
 		camera = new THREE.PerspectiveCamera(40, window.width/window.height , 1, 10000 *resolutionZoom);
 		camera.position.z = 500 * resolutionZoom;
-		
 		isAnimateHand = true;
 		
 		if(sp){
 	    gcontrols = new THREE.DeviceOrientationControls(camera);
+			camera.position.z = -1000 * resolutionZoom;
 	  }else{
 	    controls = new THREE.OrbitControls( camera );
 			controls.rotateSpeed = 0.1;
@@ -435,12 +435,12 @@ ThreeDD.main = function(){
 			var atanSitaXZ = Math.atan(Math.abs(stx) / Math.abs(stz)) * 1;
 			var atanSitaYZ = Math.atan(Math.abs(sty) / Math.abs(stz)) * 1;
 			
-			var teamDiffUnit = 72
-			var teamDiffX = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.cos(atanSitaXZ);
-			var teamDiffZ = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.sin(atanSitaXZ);
-			
 			// Y軸方向にて、値が大小大きくなるにつれ見にくいので仮想Z軸の倍率を設定しておく
-			var faceR = Math.abs(elm['__data__']['index'] -25) / 23 + 0.8;
+			var faceR = Math.pow((Math.abs(elm['__data__']['index'] -25) / 22), 2.5) + 0.8;
+
+			var teamDiffUnit = 72
+			var teamDiffX = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.cos(atanSitaXZ) * faceR;
+			var teamDiffZ = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.sin(atanSitaXZ) * faceR;
 			
 			helix.position.x = teamDiffX + (stx <= 0 ? Math.sin(atanSitaXZ) * Math.abs(stz) : Math.sin(atanSitaXZ) * stz);
 			helix.position.y = sty >= 0 ? Math.sin(atanSitaYZ) * Math.abs(stz) * faceR : Math.sin(atanSitaYZ) * stz * faceR;
