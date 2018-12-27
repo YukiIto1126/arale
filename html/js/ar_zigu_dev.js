@@ -401,7 +401,7 @@ ThreeDD.main = function(){
 	        "color": "rgba(255, 255, 255, 0.75)",
 	        "text-alain": "center",
 					"background": "rgba(0, 0, 0, 0.75)",
-// 					"background": "red",
+					"background": "red",
 					"background-attachment": "fixed",
 					"background-repeat": "no-repeat",
 					"opacity": "1"
@@ -423,15 +423,16 @@ ThreeDD.main = function(){
 			//ARジグザグ配置
 			var helix = new THREE.Object3D();
 			
-			var stx = 3000 - 1000 *elm['__data__']['set'];
+			var stx = 2000 - 1000 *elm['__data__']['set'];
 			var sty = 2500 - elm['__data__']['index'] * 100;
 			var stz = -6400;
 			
 			var atanSitaXZ = Math.atan(Math.abs(stx) / Math.abs(stz)) * 1.5;
 			var atanSitaYZ = Math.atan(Math.abs(sty) / Math.abs(stz)) * 1.5;
 			
-			var teamDiffX = (elm['__data__']['team1'] == 1 ? -48 : 48) * Math.cos(atanSitaXZ);
-			var teamDiffZ = (elm['__data__']['team1'] == 1 ? -48 : 48) * Math.sin(atanSitaXZ);
+			var teamDiffUnit = 72
+			var teamDiffX = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.cos(atanSitaXZ);
+			var teamDiffZ = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.sin(atanSitaXZ);
 			
 			helix.position.x = teamDiffX + (stx <= 0 ? Math.sin(atanSitaXZ) * Math.abs(stz) : Math.sin(atanSitaXZ) * stz);
 			helix.position.y = sty >= 0 ? Math.sin(atanSitaYZ) * Math.abs(stz) : Math.sin(atanSitaYZ) * stz;
