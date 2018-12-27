@@ -382,9 +382,9 @@ ThreeDD.main = function(){
 // 		sceneMyStamp = new THREE.Scene();
 		
 		//ミニグラフのサイズ定義
-    var width  = 36 * resolutionZoom,
-        height = 36 * resolutionZoom;
-	        
+		var sizeBase = 56;
+    var width  = sizeBase * resolutionZoom, height = sizeBase * resolutionZoom;
+          
 		//グラフ描画用のDIV生成 narumi
     elements = d3.selectAll('.element')
         .data(pointDatas).enter()
@@ -396,15 +396,16 @@ ThreeDD.main = function(){
         .style({
 	        "width":width + "px",
 	        "height": height + "px",
-	        "font-size": "48px",
-	        "border-radius": "48px",
+	        "font-size": "72px",
+	        "border-radius": "96px",
 	        "color": "rgba(255, 255, 255, 0.75)",
 	        "text-alain": "center",
 					"background": "rgba(0, 0, 0, 0.75)",
 					"background": "red",
 					"background-attachment": "fixed",
 					"background-repeat": "no-repeat",
-					"opacity": "1"
+					"opacity": "1",
+					"line-height": "125px",
 				})
 				.text(function(e, i){
         	return e["sum"];
@@ -423,22 +424,29 @@ ThreeDD.main = function(){
 			//ARジグザグ配置
 			var helix = new THREE.Object3D();
 			
-			var stx = 2000 - 1000 *elm['__data__']['set'];
-			var sty = 2500 - elm['__data__']['index'] * 100;
-			var stz = -6400;
+			var x_param = 1200;
+			var y_param = 4800;
+			var z_param = 3200;
 			
-			var atanSitaXZ = Math.atan(Math.abs(stx) / Math.abs(stz)) * 1.5;
-			var atanSitaYZ = Math.atan(Math.abs(sty) / Math.abs(stz)) * 1.5;
+			var stx = x_param - (x_param/2) * elm['__data__']['set'];
+			var sty = y_param - elm['__data__']['index'] * (y_param/25);
+			var stz = -z_param;
+			
+			var atanSitaXZ = Math.atan(Math.abs(stx) / Math.abs(stz)) * 1;
+			var atanSitaYZ = Math.atan(Math.abs(sty) / Math.abs(stz)) * 1;
 			
 			var teamDiffUnit = 72
 			var teamDiffX = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.cos(atanSitaXZ);
 			var teamDiffZ = (elm['__data__']['team1'] == 1 ? -teamDiffUnit : teamDiffUnit) * Math.sin(atanSitaXZ);
 			
-			helix.position.x = teamDiffX + (stx <= 0 ? Math.sin(atanSitaXZ) * Math.abs(stz) : Math.sin(atanSitaXZ) * stz);
-			helix.position.y = sty >= 0 ? Math.sin(atanSitaYZ) * Math.abs(stz) : Math.sin(atanSitaYZ) * stz;
-			helix.position.z = teamDiffZ + Math.abs(Math.cos(atanSitaXZ)) * stz;
+			// Y軸方向にて、値が大小大きくなるにつれ見にくいので仮想Z軸の倍率を設定しておく
+			var faceR = Math.abs(elm['__data__']['index'] -25) / 23 + 0.8;
 			
-			helix.lookAt(new THREE.Vector3());
+			helix.position.x = teamDiffX + (stx <= 0 ? Math.sin(atanSitaXZ) * Math.abs(stz) : Math.sin(atanSitaXZ) * stz);
+			helix.position.y = sty >= 0 ? Math.sin(atanSitaYZ) * Math.abs(stz) * faceR : Math.sin(atanSitaYZ) * stz * faceR;
+			helix.position.z = (stx <= 0 ? teamDiffZ : -teamDiffZ) + Math.abs(Math.cos(atanSitaXZ)) * stz + Math.abs(Math.cos(atanSitaYZ)) * stz;
+			
+			helix.lookAt(new THREE.Vector3(0,0,-z_param));
 			elm['__data__']['helix'] = helix;
 		}
 		
