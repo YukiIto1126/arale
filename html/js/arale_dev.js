@@ -13,27 +13,22 @@ ThreeDD.main = function(){
         autoRotate = false;
     }
 	
-	//外部CSS読込
-	function loadCss(href, check) {
-		if(typeof(check) == 'undefined') check = true;
-		var head = document.getElementsByTagName('head')[0];
-		var link = document.createElement('link');
-		link.rel = 'stylesheet';
-		link.type = 'text/css';
-		link.href = href;
-		if(check) {
-			var links = head.getElementsByTagName('link');
-			for(var i = 0; i < links.length; i++) {
-				if(links[i].href == link.href) return false;
-			}
-		}
-		head.appendChild(link);
-	}
-	loadCss(MakePath("css/dashboard.css"));
-	
+	//スタンプ画像のキャッシュ
+	var baboImgs={};
+	for(var i=0; i<10; i++){
+		baboImgs[i]=new Image();
+		baboImgs[i].src="/html/image/babo/sticker_"+i+".png";		
+	}	
+
 	// 	データの作成
-	var _data = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];
- 	
+	var _data = {stampList:["0","1","2","3","4","5","6","7","8","9","9","9"]};
+
+	var firstData = _data.stampList.map(m=>{
+		var obj = {};
+		obj.imageId = m;
+		return obj;
+	});
+	
 	/////////////////////////
 	//関数
 	/////////////////////////
@@ -138,20 +133,22 @@ ThreeDD.main = function(){
 	        
 		//グラフ描画用のDIV生成
     elements = d3.selectAll('.element')
-        .data(_data).enter()
+        .data(firstData).enter()
         .append('div')
-        .attr('class', 'element')
+        .attr({
+	        'class':'element',
+	        'border':'0',
+	       })
         .attr('id', function(e, i){
         	return "divPanel" + i;
         })
         .style({
 	        "width":width + "px",
 	        "height": height + "px",
-	        "color": "rgba(145, 145, 145, 0.75)",
 					"background": function(e, i){
-							var image_index = Math.floor(Math.random() * 4);
-							return "url('/html/image/babo/sticker_"+image_index+".png')"
+							return 'url(' + baboImgs[e.imageId].src + ')';
 					},
+					"border":"none",
 					"background-attachment": "fixed",
 					"background-repeat": "no-repeat",
 					"opacity": "1"
@@ -185,9 +182,9 @@ ThreeDD.main = function(){
 		rendererMyStamp.domElement.style.top = 0;
 		document.getElementById('container').appendChild(rendererMyStamp.domElement);
 		
-		displayHiddenElements(true);
 	}
 	
+	// 	消えるアニメーション
 	function displayHiddenElements(isShow){
 		setTimeout(function(){
 			elements
@@ -922,10 +919,10 @@ function MoveCameraObject(e){
 	document.body.appendChild(dom)
 	
 	//データ調整
-	for(var i = 0; i < _data.length; i++) {
-		_data[i].index = i;
+	for(var i = 0; i < firstData.length; i++) {
+		firstData[i].index = i;
 	}
-	dataCount = _data.length;
+	dataCount = firstData.length;
 	movementSpeed = 10000 / dataCount;
 	
 	init();
