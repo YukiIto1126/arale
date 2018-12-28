@@ -386,13 +386,36 @@ ThreeDD.main = function(){
     var width  = sizeBase * resolutionZoom, height = sizeBase * resolutionZoom;
           
 		//グラフ描画用のDIV生成 narumi
-    elements = d3.selectAll('.element')
+    elementsPoint = d3.selectAll('.element')
         .data(pointDatas).enter()
         .append('div')
         .attr('class', 'element')
         .attr('id', function(e, i){
         	return "divPanel" + i;
         })
+        .style({
+	        "width":width + "px",
+	        "height": height + "px",
+	        "font-size": "72px",
+	        "border-radius": "96px",
+	        "color": "rgba(255, 255, 255, 0.75)",
+	        "text-alain": "center",
+					"background": "rgba(0, 0, 0, 0.75)",
+// 					"background": "red",
+					"background-attachment": "fixed",
+					"background-repeat": "no-repeat",
+					"opacity": "1",
+					"line-height": "125px",
+				})
+				.text(function(e, i){
+        	return e["sum"];
+        });
+        
+    //グラフ描画用のDIV生成 narumi
+    elementsLine = d3.selectAll('.elementLine')
+        .data(pointDatas).enter()
+        .append('hr')
+        .attr('class', 'elementLine')
         .style({
 	        "width":width + "px",
 	        "height": height + "px",
@@ -410,9 +433,10 @@ ThreeDD.main = function(){
 				.text(function(e, i){
         	return e["sum"];
         });
+
 	    		
 		//座標を設定 narumi
-		for (let elm of elements[0]) {
+		for (let elm of elementsPoint[0]) {
 			
 			//ランダム配置
 			var random = new THREE.Object3D();
@@ -452,7 +476,7 @@ ThreeDD.main = function(){
 		
 		//シーンへの初期配置処理		
 		let list = document.getElementsByClassName('fuga');
-		for (let elm of elements[0]) {
+		for (let elm of elementsPoint[0]) {
 			object = new THREE.CSS3DObject(elm);
 	    object.position.fromArray(elm['__data__'].helix.position);
 	    object.rotation.fromArray(elm['__data__'].helix.rotation);
@@ -546,7 +570,7 @@ ThreeDD.main = function(){
 		r = 40 * dataCount;
 		
 		//パネルの表示非表示制御
-		elements.style('display', 'block')
+		elementsPoint.style('display', 'block')
 			.transition().duration(duration)
 			.transition()
 			.duration(1)
@@ -735,7 +759,7 @@ function MoveCameraObject(e){
 	            isAnimateHand = false;
 	        	controls.enabled = false;
 	            	        	
-	            elements.on('click',null);
+	            elementsPoint.on('click',null);
 	            
 	            clockAutoRotate.start();
 	  			isAnimateAuto = true;
@@ -758,7 +782,7 @@ function MoveCameraObject(e){
 		  		controls.enabled = true;
 	  		}
 	  		
-			elements.on('click', MoveCameraObject);
+			elementsPoint.on('click', MoveCameraObject);
 
 	  		isAnimateHand = true;
 	  		autoRotate = false;
@@ -851,7 +875,7 @@ function MoveCameraObject(e){
 					//キーダウンでの移動を不可能にする
 					controls.dispose();
 					
-					elements.on('click', null);
+					elementsPoint.on('click', null);
 					isAnimateFly = true;
 					
 					setTimeout(function(){
@@ -905,7 +929,7 @@ function MoveCameraObject(e){
 		var animationSpeed = 100000/movementSpeed;
 		var timeCount = dataCount;
 		if(filterCategory){
-			elements.transition().duration(animationSpeed)
+			elementsPoint.transition().duration(animationSpeed)
 				.delay(function(d, i){
 					return i * straightLength / movementSpeed * 1000 + delayBase
 				})
@@ -915,9 +939,9 @@ function MoveCameraObject(e){
 					return i * straightLength / movementSpeed * 1000 + delayBase + animationSpeed
 				})
 		    .style("visibility",  "hidden");
-		  timeCount = elements.length;
+		  timeCount = elementsPoint.length;
 		}else{
-			elements.transition().duration(animationSpeed)
+			elementsPoint.transition().duration(animationSpeed)
 			.delay(function(d, i){
 				return i * straightLength / movementSpeed * 1000 + delayBase
 			})
@@ -960,7 +984,7 @@ function MoveCameraObject(e){
 	/////////////////////////
 	//変数
 	/////////////////////////
-	var elements, newElements;
+	var elementsPoint, newElements;
 	var filterCnt = 0;
 	var filterCategory;
 	var movementSpeed;
@@ -1091,8 +1115,8 @@ function MoveCameraObject(e){
 				d3.select("#restartStraight").transition().duration(300).style("opacity",  0).delay(300).remove();
 				
 				//フィルタ選択モードであれば、フィルタを反映させる。
-				elements.transition();
-				elements.style("visibility", "visible");
+				elementsPoint.transition();
+				elementsPoint.style("visibility", "visible");
 				
 				break;
 		}
@@ -1109,10 +1133,10 @@ function MoveCameraObject(e){
 				//以前がFlyコントローラの場合はコントローラの切替を行う
 				if(preDisplayStyle == "straight") {
 					ChangeControlsOrbit();
-					elements.on('click', MoveCameraObject);
+					elementsPoint.on('click', MoveCameraObject);
 				}else if(preDisplayStyle == "circle") {
-					elements.on("click", null);
-					elements.on('click', MoveCameraObject);
+					elementsPoint.on("click", null);
+					elementsPoint.on('click', MoveCameraObject);
 					isAnimateHand = true;
 				}
 				else isAnimateHand = true;
@@ -1128,10 +1152,10 @@ function MoveCameraObject(e){
 				//以前がFlyコントローラの場合はコントローラの切替を行う
 				if(preDisplayStyle == "straight") {
 					ChangeControlsOrbit();
-					elements.on('click', MoveCameraObject);
+					elementsPoint.on('click', MoveCameraObject);
 				}else if(preDisplayStyle == "circle") {
-					elements.on("click", null);
-					elements.on('click', MoveCameraObject);
+					elementsPoint.on("click", null);
+					elementsPoint.on('click', MoveCameraObject);
 					isAnimateHand = true;
 				}
 				else isAnimateHand = true;
