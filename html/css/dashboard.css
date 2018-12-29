@@ -1,3 +1,7 @@
+button {
+    touch-action: manipulation;
+}
+
 /* アニメーション */
 @keyframes Flash1{
 	0%{
