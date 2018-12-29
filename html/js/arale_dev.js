@@ -13,28 +13,27 @@ var ThreeDD = {};
 ThreeDD.main = function(){
 	
 	/////////////////////////
-	//変数
+	//ユーザ定義変数
+	/////////////////////////
+	var autoLoadMiliSecond = 4000;
+	
+	/////////////////////////
+	//プライベート変数
 	/////////////////////////
 	var container = d3.select("#container");
 	var elementsFst, elementsSnd, newElements;
 	var theta = 0;
 	var camera;
 	var geometry, mesh;
-	var sceneOtherStamp, rendererOtherStamp;
-	var sceneMyStamp, rendererMyStamp;	
+	var scene, renderer;
 	var controls, gcontrols;
-	var oldTimeSeconds = 0;
-	var oldTimeCircle = 0;
 	var resolutionZoom = 2.5; //解像度
 	//スタンプサイズ定義
   var width  = 100 * resolutionZoom, height = 100 * resolutionZoom;
 	// userAgentの判定
 	var sp = false;
 	var ua = navigator.userAgent;
-    if (ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0) {
-        var sp = true;
-//         document.getElementById("video").style.transform = "scale(1.2)";
-    }else if(ua.indexOf('iPad') > 0 || ua.indexOf('Android') > 0){
+    if (ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0 || ua.indexOf('iPad') > 0) {
         var sp = true;
 //         document.getElementById("video").style.transform = "scale(1.2)";
     }
@@ -47,19 +46,12 @@ ThreeDD.main = function(){
 	}	
 
 	// 	データの作成
-	var firstDataRaw = {stampList:[]};
-	var secondDataRaw = {stampList:[]};
+	var firstData = {stampList:[]};
+	var secondData = {stampList:[]};
 	// テスト用にデータ生成
-	firstDataRaw.stampList = Array(2).fill(0).map(m=>String(Math.floor(Math.random()*9)));
-	secondDataRaw.stampList = Array(3).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+	firstData.stampList = Array(2).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+	secondData.stampList = Array(3).fill(0).map(m=>String(Math.floor(Math.random()*9)));
 
-	//初回描画データとポールリングで受け取る用のデータ
-	var firstData = makeStampData(firstDataRaw, "elementFirst");
-	var secondData = makeStampData(secondDataRaw, "elementSecond");
-	
-	//データ格納先の箱の判定
-	var isFastData = true;
-		
 	/////////////////////////
 	//関数
 	/////////////////////////
@@ -75,150 +67,81 @@ ThreeDD.main = function(){
 	}
 	
 	//データをポーリングで読み込んで描画する
-	function autoLoadData(){
+	function autoLoadData(elm, data, classNm){
 		
-		firstDataRaw.stampList = Array(Math.floor(Math.random() * 48)).fill(0).map(m=>String(Math.floor(Math.random()*9)));
-		firstData = makeStampData(firstDataRaw, "elementFirst");
-
-		if(elementsFst){
-			elementsFst.data(firstData).enter()
-	      .append('div');
+		data.stampList = Array(Math.floor(Math.random() * 47)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+		var stampData = makeStampData(data, classNm);
+		
+		console.log("ランダムデータ数："+stampData.length)
+		if(elm){
+			if(elm._groups[0].length <= stampData.length){
+				var enter = elm.data(stampData);
+				var elmEnter = enter
+				  .enter()
+				  .append("div");
+				elm = elmEnter.merge(enter);	
+			}else{
+				//描画するエレメントが少なくなる場合は対象のDivを削除する。
+				debugger;
+				elm = container.selectAll("."+classNm).data(stampData);
+				elm.exit().remove();
+				
+			}
+	    console.log("d３データ数："+elm._groups[0].length)
 		}else{
-			elementsFst = container.selectAll(".elementFirst")
-	      .data(firstData).enter().append('div');
+			elm = container.selectAll("."+classNm)
+	      .data(stampData).enter().append('div');
 		}
 		
-		elementsFst.attr({
-        'class':'elementFirst',
-        'border':'0',
-       })
-      .style({
-        "width":width + "px",
-        "height": height + "px",
-				"background": function(e, i){
-						return 'url(' + baboImgs[e.imageId].src + ')';
-				},
-				"border":"none",
-				"background-attachment": "fixed",
-				"background-repeat": "no-repeat",
-				"opacity": "0"
+		elm.style('background',function(e, i){
+				return 'url(' + baboImgs[e.imageId].src + ')';
 			})
+			.attr('class',classNm)
+			.attr('border','0')
+			.style("width",width + "px")
+			.style("height", height + "px")
+			.style("border","none")
+			.style("background-attachment","fixed")
+			.style("background-repeat","no-repeat")
+			.style("opacity","0")
+			.style("background-attachment","fixed")
+			.style("background-repeat","no-repeat")
 			.transition()
-			.duration(1000)
+			.duration(600)
 			.delay(function(e){
 				return e.time;
 			})
-			.style({
-				'opacity':1,
-				'padding-top': '120px'
-			})
+			.style('opacity', 1)
+			.style('padding-top','120px')
 			.transition()
-			.duration(1000)
+			.duration(600)
 			.delay(function(e){
-				return 3000 + e.time;
+				return autoLoadMiliSecond - 1000 + e.time;
 			})
-			.style({
-				'opacity':0,
-				'padding-top': '0px'
-			})
+			.style('opacity',0)
+			.style('padding-top', '0px')
 			.remove();
 					
-		//座標を設定
+		//座標を設定して配置する
 		var cnt = 0;
-		var l = elementsFst[0].length;
-		for (let elm of elementsFst[0]) {
-			SetPosition(elm, cnt, l);
+		var l = elm._groups[0].length;
+		for (let e of elm._groups[0]) {
+			SetPosition(e, cnt, l);
 			cnt++;
-		}
-		
-		//シーンへの初期配置処理		
-		for (let elm of elementsFst[0]) {
-			var object = new THREE.CSS3DObject(elm);
-
-	    sceneOtherStamp.add(object);
-	    
+			
 			//初期配置
-			object.position.set(elm['__data__'].arale.position.x, elm['__data__'].arale.position.y, elm['__data__'].arale.position.z);
-	    object.rotation.set(elm['__data__'].arale.rotation.x, elm['__data__'].arale.rotation.y, elm['__data__'].arale.rotation.z);
+			var object = new THREE.CSS3DObject(e);
+			object.position.set(e['__data__'].arale.position.x, e['__data__'].arale.position.y, e['__data__'].arale.position.z);
+	    object.rotation.set(e['__data__'].arale.rotation.x, e['__data__'].arale.rotation.y, e['__data__'].arale.rotation.z);
+	    scene.add(object);
 		}
 		
 		removeEmptyDiv();
-		setTimeout(autoLoadData, 8000);
+		setTimeout(function(){
+			autoLoadData(elm, data, classNm);
+		}, autoLoadMiliSecond * 2.5);
 	}
-	
-		//データをポーリングで読み込んで描画する
-	function autoLoadSecondData(){
 		
-		secondDataRaw.stampList = Array(Math.floor(Math.random() * 48)).fill(0).map(m=>String(Math.floor(Math.random()*9)));
-		secondData = makeStampData(secondDataRaw, "elementFirst");
-
-		if(elementsSnd){
-			elementsSnd.data(secondData).enter()
-	      .append('div');
-		}else{
-			elementsSnd = container.selectAll(".elementSecond")
-	      .data(secondData).enter().append('div');
-		}
-		
-		elementsSnd.attr({
-        'class':'elementSecond',
-        'border':'0',
-       })
-      .style({
-        "width":width + "px",
-        "height": height + "px",
-				"background": function(e, i){
-						return 'url(' + baboImgs[e.imageId].src + ')';
-				},
-				"border":"none",
-				"background-attachment": "fixed",
-				"background-repeat": "no-repeat",
-				"opacity": "0"
-			})
-			.transition()
-			.duration(1000)
-			.delay(function(e){
-				return e.time;
-			})
-			.style({
-				'opacity':1,
-				'padding-top': '120px'
-			})
-			.transition()
-			.duration(1000)
-			.delay(function(e){
-				return 3000 + e.time;
-			})
-			.style({
-				'opacity':0,
-				'padding-top': '0px'
-			})
-			.remove();
-					
-		//座標を設定
-		var cnt = 0;
-		var l = elementsSnd[0].length;
-		for (let elm of elementsSnd[0]) {
-			SetPosition(elm, cnt, l);
-			cnt++;
-		}
-		
-		//シーンへの初期配置処理		
-		for (let elm of elementsSnd[0]) {
-			var object = new THREE.CSS3DObject(elm);
-
-	    sceneOtherStamp.add(object);
-	    
-			//初期配置
-			object.position.set(elm['__data__'].arale.position.x, elm['__data__'].arale.position.y, elm['__data__'].arale.position.z);
-	    object.rotation.set(elm['__data__'].arale.rotation.x, elm['__data__'].arale.rotation.y, elm['__data__'].arale.rotation.z);
-		}
-		
-		removeEmptyDiv();
-		
-		setTimeout(autoLoadSecondData, 8000);
-	}
-	
 	function removeEmptyDiv(){
 		//空のDivを削除する
 		var div = document.getElementById("container").childNodes;
@@ -251,18 +174,13 @@ ThreeDD.main = function(){
 			controls.maxDistance = 6000 * resolutionZoom;
 	  }
 
-		geometry = new THREE.CubeGeometry( 200, 300, 400 );
-		sceneOtherStamp = new THREE.Scene();
+		scene = new THREE.Scene();
 	  
-		rendererOtherStamp = new THREE.CSS3DRenderer();
-		rendererOtherStamp.setSize( window.innerWidth, window.innerHeight );
-		rendererOtherStamp.domElement.style.position = 'absolute';
-		rendererOtherStamp.domElement.style.top = 0;
-		document.getElementById('container').appendChild(rendererOtherStamp.domElement);
-		
-		//スタンプ生成
-		autoLoadData()
-		setTimeout(autoLoadSecondData, 4000)
+		renderer = new THREE.CSS3DRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.domElement.style.position = 'absolute';
+		renderer.domElement.style.top = 0;
+		document.getElementById('container').appendChild(renderer.domElement);
 	}
 	
 	//Threeアニメーションの定義
@@ -278,11 +196,10 @@ ThreeDD.main = function(){
 		
 		// 自分が送ったスタンプのアニメーション
 		if(newElements) {
-			ne = sceneOtherStamp.children.filter(f=>f.element.classList[0] == "elementNew");
+			ne = scene.children.filter(f=>f.element.classList[0] == "elementNew");
 			for (let i = 0; i < ne.length; i++) {
 				var newPosition = new THREE.Object3D();
-				console.log(ne[i].position.z);
-				//narumi
+
 				newPosition.position.set(ne[i].position.x, ne[i].position.y-15, ne[i].position.z-60);
 				newPosition.lookAt(camera.position);
 				
@@ -292,13 +209,13 @@ ThreeDD.main = function(){
 		}
 		
 		TWEEN.update();
-		rendererOtherStamp.render( sceneOtherStamp, camera );
+		renderer.render( scene, camera );
 	}
 
 	function WindowResize() {
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
-		rendererOtherStamp.setSize( window.innerWidth, window.innerHeight );
+		renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 
 	function SetPosition(d, i, dataCnt) {
@@ -334,6 +251,15 @@ ThreeDD.main = function(){
 	/////////////////////////
 	
 	init();
+	
+	//スタンプ生成
+	autoLoadData(elementsFst, firstData, "elementFirst");
+/*
+	setTimeout(function(){
+		autoLoadData(elementsSnd, secondData, "elementSecond");
+	}, autoLoadMiliSecond)
+*/
+		
 	animate();
 	
 	//画面リサイズ
@@ -343,37 +269,41 @@ ThreeDD.main = function(){
 	var myStamps = [];
 	document.querySelector("#sendstamp").addEventListener('click', function(e){
 
-	  //ミニグラフのサイズ定義
-    var width  = 230 * resolutionZoom,
-        height = 160 * resolutionZoom;
 	  //新規投稿データ生成
 	  var newData = {"img":e.target.getAttribute("src")};
 	  myStamps.push(newData);
+
 	  //グラフ描画用のDIV生成
-    newElements = d3.selectAll('.elementNew')
+    newElements = container.select('.elementNew')
 	    .data(myStamps).enter()
-	    .append('div')
-	    .attr('class', 'elementNew')
-	    .style({
-	      "width":width + "px",
-	      "height": height + "px",
-				"background": function(e, i){
+	    .append('div');
+	  newElements.attr('class', 'elementNew')
+	    .style("width", width + "px")
+	    .style("height", height + "px",)
+	    .style("background", function(e, i){
 						return "url('"+e.img+"')"
-				},
-				"background-attachment": "fixed",
-				"background-repeat": "no-repeat",
-				"opacity": "1"
 			})
+	    .style("background-attachment", "fixed")
+	    .style("background-repeat", "no-repeat")
+	    .style("opacity", "1")
 			.transition()
 			.duration(3000)
 			.delay(100)
 			.style('opacity', '0')
-			.remove()
-			.each("end", function(e) { 
-				newElements[0].shift();
-			});
+			.on('end', function(e) { 
+				this.remove();
+				myStamps.splice(0, 1);
 				
-	    		
+				console.log("myStampsの数："+myStamps.length);
+				console.log("elementsの数："+d3.selectAll('.elementNew')._groups[0].legth);
+				
+				
+				if(myStamps.length == 0){
+					d3.selectAll('.elementNew').remove();
+				}
+			})
+			.remove();
+
 		//座標を設定
 		var newPosition = new THREE.Object3D();
 		vector = new THREE.Vector3(0,0,0);
@@ -386,10 +316,10 @@ ThreeDD.main = function(){
 		myStamps[myStamps.length-1]['newPosition'] = newPosition.position;
 		
 		//シーンへの初期配置処理
-		var object = new THREE.CSS3DObject(newElements[0][myStamps.length-1]);
+		var object = new THREE.CSS3DObject(newElements._groups[0][myStamps.length-1]);
     object.position.fromArray(newPosition.position);
     object.rotation.fromArray(newPosition.rotation);
-    sceneOtherStamp.add(object);
+    scene.add(object);
     
     object.position.set(newPosition.position.x,newPosition.position.y,newPosition.position.z);
     object.rotation.set(newPosition.rotation.x,newPosition.rotation.y,newPosition.rotation.z);
