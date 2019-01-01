@@ -436,3 +436,16 @@ td.stamp{
 #sendstamp table td img{
 	width: 100%;
 }
+
+/* ARジグザグ */
+
+#setChange{
+  position: absolute;
+  bottom: 60px;
+  width: auto;
+  left: 50%;
+  color:white;
+}
+#setChange span{
+	margin: 0px 24px;
+}	
