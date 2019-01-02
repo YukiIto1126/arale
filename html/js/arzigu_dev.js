@@ -29,7 +29,8 @@ ThreeDD.main = function(){
 	var theta = 0;
 	var camera;
 	var geometry, mesh;
-	var scene, renderer;
+	var scene;
+	var renderer;
 	var controls, gcontrols;
 	var resolutionZoom = 2.5; //解像度
 	//得点サイズ定義
@@ -320,7 +321,11 @@ ThreeDD.main = function(){
 		
 		//セット数の文言更新
 		document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
-
+		
+		for(var e in scene.children){
+			if(e.element)e.element.remove();
+		}
+		
 		var schoolData = [{"name":"星城"},{"name":"育英"}];
 		var data = pointDatas[currentSetIndex];
 		var lineData = data.map((m,i)=>{
@@ -332,31 +337,20 @@ ThreeDD.main = function(){
 		}).slice(0, data.length-1)
 		
 		if(elements){
-			
-			debugger;
-						
-			if(elements._groups[0].length <= data.length){
+								
+				//描画既存のエレメントを削除する
+				while(scene.children.length > 0){ 
+				  scene.remove(scene.children[0]); 
+				}
 				
-				//描画するエレメントが増加する場合
-				var enter = elements.data(data);
-				var elmEnter = enter.enter().append("div");
-				elements = elmEnter.merge(enter);	
+				var exit = elements.data(data)
+				exit.exit().remove();
+				elements = exit.enter().append('div').merge(exit);
 				
-				var enterLine = elementsLine.data(lineData);
-				var elmEnterLine = enterLine.enter().append("hr");
-				elementsLine = elmEnterLine.merge(enterLine);	
+				var exitLine = elementsLine.data(lineData)
+				exitLine.exit().remove();
+				elementsLine = exitLine.enter().append('hr').merge(exitLine);
 				
-			}else{
-				//描画するエレメントが少なくなる場合は対象のDivを削除する。
-				container.selectAll(".schoolNm").data(data).exit().remove();
-				container.selectAll(".ziguline").data(data).exit().remove();
-				container.selectAll(".point").data(data).exit().remove();
-				
-				elements = container.selectAll(".schoolNm").data(data).enter().append('div');
-				elementsLine = container.selectAll(".ziguline").data(lineData).enter().append('hr');
-				elementsSchool = container.selectAll(".point").data(schoolData).enter().append('div');
-			}
-			
 		}else{
 			//初回描画
 			elements = container.selectAll(".schoolNm").data(data).enter().append('div');
@@ -399,35 +393,37 @@ ThreeDD.main = function(){
         .attr('class', 'ziguline')
         .attr('width','200')
         .attr('color','#ffffff')
-        					
+     
 		//座標を設定して配置する
 		var cnt = 0;
 		var l = elements._groups[0].length;
+		
 		for (let e of elements._groups[0]) {
-			SetPosition(e, cnt, l);
-			if (elementsLine._groups[0].length > cnt) {
-				SetLinePosition(elementsLine._groups[0][cnt], cnt, l);	
+
+			if(e){
+				SetPosition(e, cnt, l);	
+				//初期配置
+				var object = new THREE.CSS3DObject(e);
+				object.position.set(e.__data__.arzigu.position.x, e.__data__.arzigu.position.y, e.__data__.arzigu.position.z);
+		    object.rotation.set(e.__data__.arzigu.rotation.x, e.__data__.arzigu.rotation.y, e.__data__.arzigu.rotation.z);
+		    scene.add(object);
 			}
-			//初期配置
-			var object = new THREE.CSS3DObject(e);
-			object.position.set(e.__data__.arzigu.position.x, e.__data__.arzigu.position.y, e.__data__.arzigu.position.z);
-	    object.rotation.set(e.__data__.arzigu.rotation.x, e.__data__.arzigu.rotation.y, e.__data__.arzigu.rotation.z);
-	    scene.add(object);
-	    
-	    if (elementsLine._groups[0].length > cnt) {
-		    var el = elementsLine._groups[0][cnt]
+			
+			if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
+				SetLinePosition(elementsLine._groups[0][cnt], cnt, l);	
+				var el = elementsLine._groups[0][cnt]
 		    var objLine = new THREE.CSS3DObject(elementsLine._groups[0][cnt]);
 				objLine.position.set(el.__data__.arziguLine.position.x, el.__data__.arziguLine.position.y, el.__data__.arziguLine.position.z);
 		    objLine.rotation.set(el.__data__.arziguLine.rotation.x, el.__data__.arziguLine.rotation.y, el.__data__.arziguLine.rotation.z);
 		    scene.add(objLine);
-		  }
-		  
+			}
+			
 		  cnt++;
 		}
 		
 		
 		for (var i = 0; i<elementsSchool._groups[0].length; i++){
-			SetScoolPosition(elementsSchool._groups[0][i], i, elementsLine._groups[0].length)
+			SetScoolPosition(elementsSchool._groups[0][i], i, elements._groups[0].length)
 			var es = elementsSchool._groups[0][i]
 			var objectScool = new THREE.CSS3DObject(es);
 			objectScool.position.set(es.__data__.arziguScool.position.x, es.__data__.arziguScool.position.y, es.__data__.arziguScool.position.z);
@@ -436,13 +432,65 @@ ThreeDD.main = function(){
 		}
 		
 		removeEmptyDiv();
-		
+
+// 		transform()
 /*
 		setTimeout(function(){
 			autoLoadData();
 		}, autoLoadMiliSecond);
 */
 	}
+	
+	function transform(){
+		TWEEN.removeAll();
+		var duration = 3000;
+		
+		//パネルの表示非表示制御
+/*
+		elements
+			.transition().duration(duration)
+			.style('opacity', function(d,i){
+				return 1;
+			});
+*/
+		
+		//パネルの移動
+		for(var i = 0; i < scene.children.length; i++){
+			var v = scene.children[i];
+			
+			if(!v.element)continue;
+			
+			var newPos;
+			var newRot;
+			
+			var key = "arzigu";
+			if(v.element.__data__["arziguScool"]){
+				key = "arziguScool";
+			}else if(v.element.__data__["arziguLine"]){
+				key = "arziguLine";
+			}
+			
+			newPos = v.element.__data__[key].position;
+			newRot = v.element.__data__[key].rotation;
+			
+			var position = new TWEEN.Tween(v.position)
+			    .to({x: newPos.x, y: newPos.y, z: newPos.z}, Math.random() * duration + duration)
+			    .easing(TWEEN.Easing.Exponential.InOut)
+			    .start();
+			
+			var rotate = new TWEEN.Tween(v.rotation)
+			    .to({x: newRot.x, y: newRot.y, z: newRot.z}, Math.random() * duration + duration)
+			    .easing(TWEEN.Easing.Exponential.InOut)
+			    .start();
+		}
+	
+		var update = new TWEEN.Tween(this)
+			.to({}, duration * 2)
+			.onUpdate(function(){
+				renderer.render( scene, camera )
+			})
+			.start();
+	}			
 		
 	function removeEmptyDiv(){
 		//空のDivを削除する
@@ -454,7 +502,6 @@ ThreeDD.main = function(){
 		}
 	}
 
-	var rendererGl;
 	// 	Threeの初期化処理
 	function init() {
 		camera = new THREE.PerspectiveCamera(40, window.width/window.height , 1, 10000 *resolutionZoom);
@@ -478,27 +525,16 @@ ThreeDD.main = function(){
 	  }
 
 		scene = new THREE.Scene();
-  
 		renderer = new THREE.CSS3DRenderer();
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		renderer.domElement.style.position = 'absolute';
 		renderer.domElement.style.top = 0;
 		document.getElementById('container').appendChild(renderer.domElement);
-		
-		
-		rendererGl = new THREE.WebGLRenderer();
-    rendererGl.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('container').appendChild(rendererGl.domElement);
-    rendererGl.render(scene, camera);
-            
-		var axes = new THREE.AxisHelper(25);
-    scene.add(axes);
 	}
 	
 	//Threeアニメーションの定義
 	function animate() {
-		requestAnimationFrame(animate);
-		
+	
 		if(sp){
 			gcontrols.connect();
       gcontrols.update();
@@ -508,7 +544,8 @@ ThreeDD.main = function(){
 		
 		TWEEN.update();
 		renderer.render( scene, camera );
-		rendererGl.render( scene, camera );
+		
+		requestAnimationFrame(animate);
 	}
 
 	function WindowResize() {
@@ -536,7 +573,7 @@ ThreeDD.main = function(){
 		arzigu.position.y = d.__data__.team1 == 1 ? height*0.75 : -height*0.75;
 		arzigu.position.z = (distance * Math.sin(phi))*resolutionZoom; 
 		
-		arzigu.lookAt(camera.position);
+		arzigu.lookAt(new THREE.Vector3(0,0,0));
 		
 		d.__data__['arzigu'] = arzigu;
 		d.__data__['element'] = d;
@@ -554,12 +591,12 @@ ThreeDD.main = function(){
 		var vector = new THREE.Vector3();
 		
 		//ズレを計算
-		var	phi = (dataCnt+5.5) * piOneStamp + Math.PI/2
+		var	phi = (dataCnt+4.5) * piOneStamp + Math.PI/2
 		arziguScool.position.x = (distance * Math.cos(phi))*resolutionZoom;
 		arziguScool.position.y = i == 0 ? height*0.75 : -height*0.75;
 		arziguScool.position.z = (distance * Math.sin(phi))*resolutionZoom; 
 		
-		arziguScool.lookAt(camera.position);
+		arziguScool.lookAt(new THREE.Vector3(0,0,0));
 		
 		d.__data__['arziguScool'] = arziguScool;
 		d.__data__['element'] = d;
@@ -605,8 +642,6 @@ ThreeDD.main = function(){
 		//得点パネルを包む角度を設定
 		arziguLine.rotation.y = Math.PI/2-phi;
 		
-		console.log("計算時："+ arziguLine.rotation);
-		
 		d.__data__['arziguLine'] = arziguLine;
 		d.__data__['element'] = d;
 	}
@@ -616,12 +651,10 @@ ThreeDD.main = function(){
 		if(currentSetIndex == 0) return;
 		currentSetIndex--;
 		autoLoadData();
-		autoLoadData();
 	}
 	function setChangeNext(){
 		if(currentSetIndex == Object.keys(pointDatas).length-1) return;
 		currentSetIndex++;
-		autoLoadData();
 		autoLoadData();
 	}
 
