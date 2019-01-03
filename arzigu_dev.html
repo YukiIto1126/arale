@@ -32,10 +32,19 @@
 
 	<body>
 		<!-- 		セット切り替え -->
-		<div id="setChange" style="position:absolute; bottom: 60px; width: auto; left:50%;">
+		<div id="setChange" style="position:absolute; bottom: 240px; width: auto; left:50%;">
 			<button id="setChangePrev">&#12296;</button>
 			<span id="setValue">1set</span>
 			<button id="setChangeNext">&#12297;</button>
+		</div>    
+		<!-- 		バボちゃんコメント表示 -->
+		<div id="baboArea" style="position:absolute;bottom: 16px;width: auto;left: 16px;opacity: 0;margin-bottom: -220px;">
+			<img id="baboImg" src="html/image/babo/sticker_0.png" style="height: 200px;float: left;"></img>
+			<div id="baboCommentDiv" style="color: white;display: inline-block;background: rgba(255,255,255,.5);white-space: nowrap;vertical-align: middle;height: 200px;border-radius: 200px; text-align: center;">
+				<span id="baboComment" style="display: inline-block;line-height: 200px;">
+					サンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメントサンプルコメント
+				</span>
+			</div>
 		</div>    
 		<!-- 		カメラ領域 -->
 		<video id="video" autoplay playsinline style="z-index: -3; height:100%; position:absolute; top:0px; left:0px; width: 100%; margin:0px; object-fit: unset;"></video>

@@ -430,8 +430,6 @@ ThreeDD.main = function(){
 	    objectScool.rotation.set(es.__data__.arziguScool.rotation.x, es.__data__.arziguScool.rotation.y, es.__data__.arziguScool.rotation.z);
 	    scene.add(objectScool);
 		}
-		
-		removeEmptyDiv();
 
 // 		transform()
 /*
@@ -491,16 +489,6 @@ ThreeDD.main = function(){
 			})
 			.start();
 	}			
-		
-	function removeEmptyDiv(){
-		//空のDivを削除する
-		var div = document.getElementById("container").childNodes;
-		for(var i = 0; i < div.length; i++){
-			if(div[i].style.cssText == ""){
-				div[i].remove();
-			}
-		}
-	}
 
 	// 	Threeの初期化処理
 	function init() {
@@ -552,6 +540,10 @@ ThreeDD.main = function(){
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
 		renderer.setSize( window.innerWidth, window.innerHeight );
+		
+		//バボちゃんコメントのリサイズ
+		var baboWidth = document.getElementById("baboImg").width;
+		document.getElementById("baboCommentDiv").style.width = window.innerWidth - baboWidth - 78 + "px";
 	}
 
 	function SetPosition(d, i, dataCnt) {
@@ -657,6 +649,37 @@ ThreeDD.main = function(){
 		currentSetIndex++;
 		autoLoadData();
 	}
+	
+	function baboComment(){
+		//データ取得
+		var key = Math.floor(Math.random()*10);
+		var imageSrc = "html/image/babo/sticker_"+ key +".png";
+		var coms = ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+		 ,"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+		 ,"ccccccccccccccccccccccccccccccccccccccccccccccccccc"
+		 ,"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+		 ,"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+		 ,"fff","ggg","hhh","iii","jjj"];
+		
+		//データ更新
+		document.getElementById("baboImg").setAttribute("src", imageSrc);
+		document.getElementById("baboComment").textContent = coms[key];
+		
+		//バボちゃん表示処理
+		d3.select("#baboArea")
+			.transition()
+			.duration(1000)
+			.style('opacity', 1)
+			.style('margin-bottom', "0px")
+			.transition()
+			.duration(1000)
+			.delay(4000)
+			.style('opacity', 0)
+			.style('margin-bottom', "-220px")
+			.on('end', function(e) {
+				setTimeout(baboComment, 3000);
+			})
+	}
 
 	/////////////////////////
 	//メイン処理
@@ -675,5 +698,10 @@ ThreeDD.main = function(){
 	//画面リサイズ
 	window.addEventListener('resize', WindowResize, false);
 	
+	// 	バボコメントエリアのサイズ指定
+	var baboWidth = document.getElementById("baboImg").width;
+	document.getElementById("baboCommentDiv").style.width = window.innerWidth - baboWidth - 78 + "px";
+	//バボコメント表示
+	setTimeout(baboComment, 3000);
 }
 window.ThreeDD = ThreeDD;
