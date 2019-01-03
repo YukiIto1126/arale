@@ -78,31 +78,20 @@ ThreeDD.main = function(){
 		console.log("ランダムデータ数："+stampData.length)
 		if(elm){
 			
-			var eles = document.getElementsByClassName(classNm);
-			console.log("削除対象前："+ eles.length);
-			for(var i=0; i<eles.length; i++){
-					eles[i].remove();
+			console.log("削除前："+ document.getElementsByClassName(classNm).length);
+			//描画既存のエレメントを削除する
+			for (var i = 0; i < scene.children.length; i++){
+				var el = scene.children[i];
+				if(el.element && el.element.getAttribute("class") == classNm){
+					scene.remove(i); 	
 				}
+			}
+			console.log("削除後："+ document.getElementsByClassName(classNm).length);
+			
+			var exit = elm.data(stampData);
+			exit.exit().remove();
+			elm = exit.enter().append('div').merge(exit);
 
-			while(document.getElementsByClassName(classNm).length>0){
-				var a = document.getElementsByClassName(classNm);			
-				for(var i=0; i<a.length; i++){
-					a[i].remove();
-				}
-			}
-			
-			console.log("削除対象後："+ document.getElementsByClassName(classNm).length);
-			
-			if(elm._groups[0].length <= stampData.length){
-				var enter = elm.data(stampData);
-				var elmEnter = enter.enter().append("div");
-				elm = elmEnter.merge(enter);	
-			}else{
-				container.selectAll("."+classNm).data(stampData).exit().remove();
-				//描画するエレメントが少なくなる場合は対象のDivを削除する。
-				elm = container.selectAll("."+classNm).data(stampData).enter().append('div');
-			}
-	    console.log("d３データ数："+elm._groups[0].length)
 		}else{
 			//初回描画
 			elm = container.selectAll("."+classNm).data(stampData).enter().append('div');
