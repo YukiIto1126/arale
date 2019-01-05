@@ -20,7 +20,8 @@ ThreeDD.main = function(){
 	//ユーザ定義変数
 	/////////////////////////
 	var autoLoadMiliSecond = 3000;
-	
+	var duration = 3000;
+	var distance  = 560;
 	/////////////////////////
 	//プライベート変数
 	/////////////////////////
@@ -33,6 +34,7 @@ ThreeDD.main = function(){
 	var renderer;
 	var controls, gcontrols;
 	var resolutionZoom = 2.5; //解像度
+	var curentSetPointCnt = 0;
 	//得点サイズ定義
   var sizeBase = 56;
   var width  = sizeBase * resolutionZoom, height = sizeBase * resolutionZoom;
@@ -59,205 +61,193 @@ ThreeDD.main = function(){
 	  "team2Score": 11,
 	  "pointLog": [
 	    [
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
 	      {"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+	    ],[
 	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0}
 	    ],[
 	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
 	    ],[
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	    ],[
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
 	    ],[
 	      {"team1":1,"team2":0},
 	      {"team1":0,"team2":1},
@@ -269,39 +259,43 @@ ThreeDD.main = function(){
 	      {"team1":1,"team2":0},
 	      {"team1":1,"team2":0},
 	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
 	      {"team1":0,"team2":1},
 	      {"team1":1,"team2":0},
 	      {"team1":1,"team2":0},
 	      {"team1":0,"team2":1},
 	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
+	      {"team1":1,"team2":0}
 	    ]
 	  ]
 	};
 	
-	var pointDatas = {};
+	var pointDatas = [];
 	var currentSetIndex = rowData.pointLog.length-1;
+	//セット毎での繰り返し
 	for(var i=0; i<rowData.pointLog.length; i++){
-		pointDatas[i] = [];
+		//ポイント毎での繰り返し
 		for(var ii=0; ii<rowData.pointLog[i].length; ii++){
-			var pointData = rowData.pointLog[i][ii]; 
-			pointData["set"] = i;
-			pointData["index"] = ii;
+			if(!pointDatas[ii]) pointDatas[ii] = {};
+			if(!pointDatas[ii]["index"])pointDatas[ii]["index"] = ii;
+			
+			pointDatas[ii]["set"+i] = {};
+			d = pointDatas[ii]["set"+i]
+			d["point"] = rowData.pointLog[i][ii]; 
+			
 			var key = rowData.pointLog[i][ii]["team1"] == 1 ? "team1" : "team2";
-			pointData["sum"] = rowData.pointLog[i].slice(0,(ii+1)).map(m=>m[key]).reduce((p,c,i,a)=>p+c);
-			pointDatas[i].push(pointData);
-		}	
-	}
+			d["sum"] = rowData.pointLog[i].slice(0,(ii+1)).map(m=>m[key]).reduce((p,c,i,a)=>p+c);
 
+			if(ii>0){
+				var thisTeam = pointDatas[ii]["set"+i].point;
+				var preTeam = pointDatas[ii - 1]["set"+i].point;
+				if(thisTeam.team1 == 1 && preTeam.team1 == 0) d["direction"] = 'up';
+				else if(thisTeam.team1 == 0 && preTeam.team1 == 1) d["direction"] = 'down';
+				else d["direction"] = 'horizon';
+			}
+		}	
+		curentSetPointCnt = rowData.pointLog[i].length;
+	}
+	
 	/////////////////////////
 	//関数
 	/////////////////////////
@@ -322,58 +316,33 @@ ThreeDD.main = function(){
 		//セット数の文言更新
 		document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
 		
-		for(var e in scene.children){
-			if(e.element)e.element.remove();
-		}
-		
 		var schoolData = [{"name":"星城"},{"name":"育英"}];
-		var data = pointDatas[currentSetIndex];
-		var lineData = data.map((m,i)=>{
-			if(i==data.length-1) return m;
-			if(data[i+1].team1 == 1 && m.team1 == 0) m.direction = 'up';
-			else if(data[i+1].team1 == 0 && m.team1 == 1) m.direction = 'down';
-			else m.direction = 'horizon';
-			return m
-		}).slice(0, data.length-1)
-		
-		if(elements){
-								
-				//描画既存のエレメントを削除する
-				while(scene.children.length > 0){ 
-				  scene.remove(scene.children[0]); 
-				}
-				
-				var exit = elements.data(data)
-				exit.exit().remove();
-				elements = exit.enter().append('div').merge(exit);
-				
-				var exitLine = elementsLine.data(lineData)
-				exitLine.exit().remove();
-				elementsLine = exitLine.enter().append('hr').merge(exitLine);
-				
-		}else{
-			//初回描画
-			elements = container.selectAll(".schoolNm").data(data).enter().append('div');
-			elementsLine = container.selectAll(".ziguline").data(lineData).enter().append('hr');
-			elementsSchool = container.selectAll(".point").data(schoolData).enter().append('div');
-		}
+		var lineData = pointDatas.slice(1,pointDatas.length); 
+
+		//初回描画
+		elements = container.selectAll(".schoolNm").data(pointDatas).enter().append('div');
+		elementsLine = container.selectAll(".ziguline").data(lineData).enter().append('hr');
+		elementsSchool = container.selectAll(".point").data(schoolData).enter().append('div');
 		
 		elementsSchool
 				.text(e=>e.name)
         .attr('class', 'schoolNm')
+        .style("opacity", 0)
         .style("font-size", "54px")
 				.style("color", "rgba(255, 255, 255, 1)")
-				.style("opacity", "1")
-				.style("text-align", "center");
+				.style("text-align", "center")
+				.transition().duration(duration)
+				.style("opacity", "1");
 				
 		elements
 				.text(function(e, i){
-		    	return e["sum"];
+		    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
 		    })
         .attr('class', 'point')
         .attr('id', function(e, i){
         	return "divPanel" + i;
         })
+        .style("opacity", 0)
         .style("width", width + "px")
         .style("height", height + "px")
         .style("font-size", "72px")
@@ -384,15 +353,24 @@ ThreeDD.main = function(){
 				.style("background", "red")
 				.style("background-attachment", "fixed")
 				.style("background-repeat", "no-repeat")
-				.style("opacity", "1")
 				.style("line-height", "140px")
-				.style("text-align", "center");
+				.style("text-align", "center")
+				.transition().duration(duration)
+				.style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+        });
+				
 				
 		//グラフ描画用のDIV生成
     elementsLine
         .attr('class', 'ziguline')
         .attr('width','200')
         .attr('color','#ffffff')
+        .style("opacity", 0)
+        .transition().duration(duration)
+        .style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+        });
      
 		//座標を設定して配置する
 		var cnt = 0;
@@ -404,8 +382,12 @@ ThreeDD.main = function(){
 				SetPosition(e, cnt, l);	
 				//初期配置
 				var object = new THREE.CSS3DObject(e);
-				object.position.set(e.__data__.arzigu.position.x, e.__data__.arzigu.position.y, e.__data__.arzigu.position.z);
-		    object.rotation.set(e.__data__.arzigu.rotation.x, e.__data__.arzigu.rotation.y, e.__data__.arzigu.rotation.z);
+				if(e.__data__["set"+currentSetIndex]){
+/*
+					object.position.set(e.__data__["arzigu"+currentSetIndex].position.x, e.__data__["arzigu"+currentSetIndex].position.y, e.__data__["arzigu"+currentSetIndex].position.z);
+					object.rotation.set(e.__data__["arzigu"+currentSetIndex].rotation.x, e.__data__["arzigu"+currentSetIndex].rotation.y, e.__data__["arzigu"+currentSetIndex].rotation.z);	
+*/
+				}
 		    scene.add(object);
 			}
 			
@@ -413,25 +395,30 @@ ThreeDD.main = function(){
 				SetLinePosition(elementsLine._groups[0][cnt], cnt, l);	
 				var el = elementsLine._groups[0][cnt]
 		    var objLine = new THREE.CSS3DObject(elementsLine._groups[0][cnt]);
-				objLine.position.set(el.__data__.arziguLine.position.x, el.__data__.arziguLine.position.y, el.__data__.arziguLine.position.z);
-		    objLine.rotation.set(el.__data__.arziguLine.rotation.x, el.__data__.arziguLine.rotation.y, el.__data__.arziguLine.rotation.z);
+		    if(e.__data__["set"+currentSetIndex]){
+/*
+					objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
+			    objLine.rotation.set(el.__data__["arziguLine"+currentSetIndex].rotation.x, el.__data__["arziguLine"+currentSetIndex].rotation.y, el.__data__["arziguLine"+currentSetIndex].rotation.z);
+*/
+		    }
 		    scene.add(objLine);
 			}
-			
 		  cnt++;
 		}
 		
 		
 		for (var i = 0; i<elementsSchool._groups[0].length; i++){
-			SetScoolPosition(elementsSchool._groups[0][i], i, elements._groups[0].length)
+			SetScoolPosition(elementsSchool._groups[0][i], i, curentSetPointCnt)
 			var es = elementsSchool._groups[0][i]
 			var objectScool = new THREE.CSS3DObject(es);
+/*
 			objectScool.position.set(es.__data__.arziguScool.position.x, es.__data__.arziguScool.position.y, es.__data__.arziguScool.position.z);
 	    objectScool.rotation.set(es.__data__.arziguScool.rotation.x, es.__data__.arziguScool.rotation.y, es.__data__.arziguScool.rotation.z);
+*/
 	    scene.add(objectScool);
 		}
-
-// 		transform()
+		
+   	transform();
 /*
 		setTimeout(function(){
 			autoLoadData();
@@ -439,18 +426,39 @@ ThreeDD.main = function(){
 */
 	}
 	
+	// 	
+	function changeSet(){
+		//セット数の文言更新
+		document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
+		curentSetPointCnt = rowData.pointLog[currentSetIndex].length;
+		
+		elements
+				.transition().duration(duration)
+				.text(function(e, i){
+		    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
+		    })
+				.style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+        })
+		
+		elementsLine
+				.transition().duration(duration)
+        .style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+        });
+
+		transform();
+	}
+	
 	function transform(){
 		TWEEN.removeAll();
-		var duration = 3000;
 		
 		//パネルの表示非表示制御
-/*
 		elements
 			.transition().duration(duration)
-			.style('opacity', function(d,i){
-				return 1;
-			});
-*/
+			.style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+      });
 		
 		//パネルの移動
 		for(var i = 0; i < scene.children.length; i++){
@@ -461,15 +469,37 @@ ThreeDD.main = function(){
 			var newPos;
 			var newRot;
 			
-			var key = "arzigu";
-			if(v.element.__data__["arziguScool"]){
+			var key;
+			switch(v.element.className){
+				case "point":
+				key = "arzigu"+currentSetIndex;
+				break;
+				case "ziguline":
+				key = "arziguLine"+currentSetIndex;
+				break;
+				case "schoolNm":
 				key = "arziguScool";
-			}else if(v.element.__data__["arziguLine"]){
-				key = "arziguLine";
+				break;
+				default:
+				break;
 			}
 			
 			newPos = v.element.__data__[key].position;
 			newRot = v.element.__data__[key].rotation;
+			
+			if(v.element.className == "schoolNm"){
+				// １週の中に描画するスタンプの個数
+				var countPerCircle = curentSetPointCnt > 50 ? curentSetPointCnt : 50;
+				//ズレを計算
+				var	phi = (curentSetPointCnt+.5) * (Math.PI * 2 / countPerCircle) + Math.PI * 1.1;
+				newPos.x = (distance * Math.cos(phi))*resolutionZoom;
+				newPos.z = (distance * Math.sin(phi))*resolutionZoom; 
+				var oldpos = Object.assign({}, v.position);
+				v.position.set(newPos.x, newPos.y, newPos.z);
+				v.lookAt(new THREE.Vector3(0,0,0));
+				newRot = v.rotation;
+				v.position.set(oldpos.x, oldpos.y, oldpos.z);
+			}
 			
 			var position = new TWEEN.Tween(v.position)
 			    .to({x: newPos.x, y: newPos.y, z: newPos.z}, Math.random() * duration + duration)
@@ -551,23 +581,69 @@ ThreeDD.main = function(){
 		// １週の中に描画するスタンプの個数
 		var countPerCircle = dataCnt > 50 ? dataCnt : 50;
 		// 中心点からスタンプを話す距離
+		
+		var index = i;
+		var piOneStamp = Math.PI * 2 / countPerCircle;
+		
+		for(var i = 0; i<=currentSetIndex; i++){
+			//螺旋_外向き
+			var arzigu = new THREE.Object3D();
+			//ズレを計算
+			var	phi = index * piOneStamp + Math.PI*1.1
+			arzigu.position.x = (distance * Math.cos(phi))*resolutionZoom;
+			arzigu.position.y = d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0;
+			arzigu.position.z = (distance * Math.sin(phi))*resolutionZoom; 
+			//回転を設定
+			arzigu.lookAt(new THREE.Vector3(0,0,0));
+			//位置・回転情報の設定
+			d.__data__['arzigu'+i] = arzigu;	
+		}
+		
+		d.__data__['element'] = d;
+	}
+	
+	function SetLinePosition(d, i, dataCnt) {
+		
+		// １週の中に描画するスタンプの個数
+		var countPerCircle = dataCnt > 50 ? dataCnt : 50;
+		// 中心点からスタンプを話す距離
 		var distance  = 560;
 		
 		var index = i;
 		var piOneStamp = Math.PI * 2 / countPerCircle;
-		//螺旋_外向き
-		var arzigu = new THREE.Object3D();
-		var vector = new THREE.Vector3();
 		
-		//ズレを計算
-		var	phi = (index+4) * piOneStamp + Math.PI/2
-		arzigu.position.x = (distance * Math.cos(phi))*resolutionZoom;
-		arzigu.position.y = d.__data__.team1 == 1 ? height*0.75 : -height*0.75;
-		arzigu.position.z = (distance * Math.sin(phi))*resolutionZoom; 
-		
-		arzigu.lookAt(new THREE.Vector3(0,0,0));
-		
-		d.__data__['arzigu'] = arzigu;
+		for(var i = 0; i<=currentSetIndex; i++){
+			//螺旋_外向き
+			var arziguLine = new THREE.Object3D();
+			
+			//ズレを計算
+			var	phi = (index+0.5) * piOneStamp + Math.PI * 1.1;
+			arziguLine.position.x = (distance * Math.cos(phi))*resolutionZoom * 1.02;
+			arziguLine.position.y = d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0;
+			arziguLine.position.z = (distance * Math.sin(phi))*resolutionZoom * 1.02; 
+			
+			//得点パネルを包む角度を設定
+			arziguLine.rotation.x = 0;
+			
+			//連続得点でない場合は斜めにする
+			if(d.__data__["set"+i]){
+				switch(d.__data__["set"+i].direction){
+					case "up":
+						arziguLine.rotation.z =  -Math.PI/4;
+						arziguLine.position.y = arziguLine.position.y - height*0.75
+						break;
+					case "down":
+						arziguLine.rotation.z =  Math.PI/4;
+						arziguLine.position.y = arziguLine.position.y + height*0.75
+						break;
+					default:
+						break;
+				}
+			}
+			//得点パネルを包む角度を設定
+			arziguLine.rotation.y = Math.PI/2-phi;
+			d.__data__['arziguLine'+i] = arziguLine;
+		}
 		d.__data__['element'] = d;
 	}
 	
@@ -580,10 +656,9 @@ ThreeDD.main = function(){
 		var piOneStamp = Math.PI * 2 / countPerCircle;
 		//螺旋_外向き
 		var arziguScool = new THREE.Object3D();
-		var vector = new THREE.Vector3();
 		
 		//ズレを計算
-		var	phi = (dataCnt+4.5) * piOneStamp + Math.PI/2
+		var	phi = (dataCnt+.5) * piOneStamp + Math.PI*1.1;
 		arziguScool.position.x = (distance * Math.cos(phi))*resolutionZoom;
 		arziguScool.position.y = i == 0 ? height*0.75 : -height*0.75;
 		arziguScool.position.z = (distance * Math.sin(phi))*resolutionZoom; 
@@ -594,60 +669,18 @@ ThreeDD.main = function(){
 		d.__data__['element'] = d;
 	}
 	
-	
-	function SetLinePosition(d, i, dataCnt) {
-		
-		// １週の中に描画するスタンプの個数
-		var countPerCircle = dataCnt > 50 ? dataCnt : 50;
-		// 中心点からスタンプを話す距離
-		var distance  = 560;
-		
-		var index = i;
-		var piOneStamp = Math.PI * 2 / countPerCircle;
-		//螺旋_外向き
-		var arziguLine = new THREE.Object3D();
-		var vector = new THREE.Vector3();
-		
-		//ズレを計算
-		var	phi = (index + 4.5) * piOneStamp + Math.PI/2
-		arziguLine.position.x = (distance * Math.cos(phi))*resolutionZoom * 1.02;
-		arziguLine.position.y = d.__data__.team1 == 1 ? height*0.75 : -height*0.75;
-		arziguLine.position.z = (distance * Math.sin(phi))*resolutionZoom * 1.02; 
-		
-		//得点パネルを包む角度を設定
-		arziguLine.rotation.x = 0;
-		
-		//連続得点でない場合は斜めにする
-		switch(d.__data__.direction){
-			case "up":
-				arziguLine.rotation.z =  -Math.PI/4;
-				arziguLine.position.y = arziguLine.position.y + height*0.75
-				break;
-			case "down":
-				arziguLine.rotation.z =  Math.PI/4;
-				arziguLine.position.y = arziguLine.position.y - height*0.75
-				break;
-			default:
-				break;
-		}
-		
-		//得点パネルを包む角度を設定
-		arziguLine.rotation.y = Math.PI/2-phi;
-		
-		d.__data__['arziguLine'] = arziguLine;
-		d.__data__['element'] = d;
-	}
-	
 	// 	セット変更用のボタン作成
 	function setChangePrev(){
 		if(currentSetIndex == 0) return;
 		currentSetIndex--;
-		autoLoadData();
+		
+		changeSet();
 	}
 	function setChangeNext(){
 		if(currentSetIndex == Object.keys(pointDatas).length-1) return;
 		currentSetIndex++;
-		autoLoadData();
+		
+		changeSet();
 	}
 	
 	function baboComment(){
