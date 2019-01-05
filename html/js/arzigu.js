@@ -82,6 +82,39 @@ ThreeDD.main = function(){
 				{"team1":0,"team2":1},
 				{"team1":0,"team2":1},
 				{"team1":0,"team2":1},
+				{"team1":1,"team2":0}
+	    ]
+	  ]
+	};
+/*
+	var rowData = {
+	  "matchId": "string",
+	  "setNo": 2,
+	  "team1Score": 14,
+	  "team2Score": 11,
+	  "pointLog": [
+	    [
+	      {"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
 				{"team1":1,"team2":0},
 				{"team1":1,"team2":0},
 				{"team1":0,"team2":1},
@@ -268,37 +301,43 @@ ThreeDD.main = function(){
 	    ]
 	  ]
 	};
+*/
 	
-	var pointDatas = [];
+	var pointDatas = makePointData(rowData);
 	var currentSetIndex = rowData.pointLog.length-1;
-	//セット毎での繰り返し
-	for(var i=0; i<rowData.pointLog.length; i++){
-		//ポイント毎での繰り返し
-		for(var ii=0; ii<rowData.pointLog[i].length; ii++){
-			if(!pointDatas[ii]) pointDatas[ii] = {};
-			if(!pointDatas[ii]["index"])pointDatas[ii]["index"] = ii;
-			
-			pointDatas[ii]["set"+i] = {};
-			d = pointDatas[ii]["set"+i]
-			d["point"] = rowData.pointLog[i][ii]; 
-			
-			var key = rowData.pointLog[i][ii]["team1"] == 1 ? "team1" : "team2";
-			d["sum"] = rowData.pointLog[i].slice(0,(ii+1)).map(m=>m[key]).reduce((p,c,i,a)=>p+c);
-
-			if(ii>0){
-				var thisTeam = pointDatas[ii]["set"+i].point;
-				var preTeam = pointDatas[ii - 1]["set"+i].point;
-				if(thisTeam.team1 == 1 && preTeam.team1 == 0) d["direction"] = 'up';
-				else if(thisTeam.team1 == 0 && preTeam.team1 == 1) d["direction"] = 'down';
-				else d["direction"] = 'horizon';
-			}
-		}	
-		curentSetPointCnt = rowData.pointLog[i].length;
-	}
+	
 	
 	/////////////////////////
 	//関数
 	/////////////////////////
+	
+	function makePointData(rowData){
+		var _pointDatas = [];
+		for(var i=0; i<rowData.pointLog.length; i++){
+			//ポイント毎での繰り返し
+			for(var ii=0; ii<rowData.pointLog[i].length; ii++){
+				if(!_pointDatas[ii]) _pointDatas[ii] = {};
+				if(!_pointDatas[ii]["index"])_pointDatas[ii]["index"] = ii;
+				
+				_pointDatas[ii]["set"+i] = {};
+				d = _pointDatas[ii]["set"+i]
+				d["point"] = rowData.pointLog[i][ii]; 
+				
+				var key = rowData.pointLog[i][ii]["team1"] == 1 ? "team1" : "team2";
+				d["sum"] = rowData.pointLog[i].slice(0,(ii+1)).map(m=>m[key]).reduce((p,c,i,a)=>p+c);
+	
+				if(ii>0){
+					var thisTeam = _pointDatas[ii]["set"+i].point;
+					var preTeam = _pointDatas[ii - 1]["set"+i].point;
+					if(thisTeam.team1 == 1 && preTeam.team1 == 0) d["direction"] = 'up';
+					else if(thisTeam.team1 == 0 && preTeam.team1 == 1) d["direction"] = 'down';
+					else d["direction"] = 'horizon';
+				}
+			}	
+			curentSetPointCnt = rowData.pointLog[i].length;
+		}	
+		return _pointDatas
+	}
 	
 	function makeStampData(arr, classNm){
 		return arr.stampList.map(m=>{
@@ -311,7 +350,7 @@ ThreeDD.main = function(){
 	}
 	
 	//データをポーリングで読み込んで描画する
-	function autoLoadData(){
+	function FistSetPosition(){
 		
 		//セット数の文言更新
 		document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
@@ -320,9 +359,9 @@ ThreeDD.main = function(){
 		var lineData = pointDatas.slice(1,pointDatas.length); 
 
 		//初回描画
-		elements = container.selectAll(".schoolNm").data(pointDatas).enter().append('div');
+		elements = container.selectAll(".point").data(pointDatas).enter().append('div');
 		elementsLine = container.selectAll(".ziguline").data(lineData).enter().append('hr');
-		elementsSchool = container.selectAll(".point").data(schoolData).enter().append('div');
+		elementsSchool = container.selectAll(".schoolNm").data(schoolData).enter().append('div');
 		
 		elementsSchool
 				.text(e=>e.name)
@@ -404,12 +443,102 @@ ThreeDD.main = function(){
 		
    	transform();
    	
-/*
-		setTimeout(function(){
-			autoLoadData();
-		}, autoLoadMiliSecond);
-*/
 	}
+	
+	function autoLoadData(){
+		
+		//デモ用にカレンとセットにでーたを増やす
+		var r = Math.floor(Math.random());
+		var obj = {"team1":0, "team2":1};
+		if( r == 0 ) obj = {"team1":1, "team2":0};
+		var _rowData = Object.assign({}, rowData);
+		_rowData.pointLog[rowData.pointLog.length-1].push(obj);
+		
+		//セットが変更されたかの判定
+		if(rowData.pointLog.length != _rowData.pointLog.length){
+			//anythin done・・・
+		}else{
+			//表示しているデータ数を増やすかどうか判定
+			if(pointDatas.length < _rowData.pointLog[rowData.pointLog.length-1].length){
+				
+				//増加得点データの抽出
+				var newPointData = makePointData(_rowData);
+				var newLinwData = newPointData.slice(1,newPointData.length); 
+				
+				//エレメント数も増やす
+				var exit = elements.data(newPointData);
+				elements = exit.enter().append('div').merge(exit);
+				
+				var exitLine = elementsLine.data(newLinwData);
+				elementsLine = exitLine.enter().append('hr').merge(exitLine);
+				
+				//ScenObjectも増やす
+				//位置も再計算する
+				
+				elements
+					.text(function(e, i){
+			    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
+			    })
+	        .attr('class', 'point')
+	        .attr('id', function(e, i){
+	        	return "divPanel" + i;
+	        })
+	        .style("opacity", 1)
+	        .style("width", width + "px")
+	        .style("height", height + "px")
+	        .style("font-size", "72px")
+					.style("border-radius", "96px")
+					.style("color", "rgba(255, 255, 255, 0.75)")
+					.style("text-alain", "center")
+	// 				.style("background", "rgba(0, 0, 0, 0.75)")
+					.style("background", "red")
+					.style("background-attachment", "fixed")
+					.style("background-repeat", "no-repeat")
+					.style("line-height", "140px")
+					.style("text-align", "center");
+						
+				//グラフ描画用のDIV生成
+		    elementsLine
+	        .attr('class', 'ziguline')
+	        .attr('width','200')
+	        .attr('color','#ffffff')
+	        .style("opacity", 1);
+	     
+				//座標を設定して配置する
+				for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
+					var e = elements._groups[0][cnt];
+					if(e){
+						SetPosition(e, cnt);	
+						if(cnt > pointDatas.length-1){
+							// オブzyr区との配置の良し悪しを判断する
+							var object = new THREE.CSS3DObject(e);
+					    scene.add(object);	
+						}
+					}
+					
+					if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
+						var el = elementsLine._groups[0][cnt]
+						SetLinePosition(el, cnt);	
+						if(cnt > pointDatas.length-2){
+							var objLine = new THREE.CSS3DObject(el);
+					    scene.add(objLine);
+						}
+					}
+				}
+				
+		   	transform();
+		   	
+			}else{
+				//データ件数が増えなかった場合
+				
+				//エレメントのデータを更新するだけ
+				//位置の再計算を行う。
+			}
+		}
+		
+		
+	}
+	setTimeout(autoLoadData, 4000);
 	
 	// 	
 	function changeSet(){
@@ -633,7 +762,7 @@ ThreeDD.main = function(){
 		changeSet();
 	}
 	function setChangeNext(){
-		if(currentSetIndex == Object.keys(pointDatas).length-1) return;
+		if(currentSetIndex == rowData.pointLog.length-1) return;
 		currentSetIndex++;
 		
 		changeSet();
@@ -677,7 +806,7 @@ ThreeDD.main = function(){
 	init();
 	
 	//スタンプ生成
-	autoLoadData(Object.keys(pointDatas).length-1);
+	FistSetPosition(Object.keys(pointDatas).length-1);
 		
 	animate();
 	
