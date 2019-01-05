@@ -374,51 +374,36 @@ ThreeDD.main = function(){
      
 		//座標を設定して配置する
 		var cnt = 0;
-		var l = elements._groups[0].length;
 		
 		for (let e of elements._groups[0]) {
 
 			if(e){
-				SetPosition(e, cnt, l);	
+				SetPosition(e, cnt);	
 				//初期配置
 				var object = new THREE.CSS3DObject(e);
-				if(e.__data__["set"+currentSetIndex]){
-/*
-					object.position.set(e.__data__["arzigu"+currentSetIndex].position.x, e.__data__["arzigu"+currentSetIndex].position.y, e.__data__["arzigu"+currentSetIndex].position.z);
-					object.rotation.set(e.__data__["arzigu"+currentSetIndex].rotation.x, e.__data__["arzigu"+currentSetIndex].rotation.y, e.__data__["arzigu"+currentSetIndex].rotation.z);	
-*/
-				}
 		    scene.add(object);
 			}
 			
 			if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
-				SetLinePosition(elementsLine._groups[0][cnt], cnt, l);	
+				SetLinePosition(elementsLine._groups[0][cnt], cnt);	
 				var el = elementsLine._groups[0][cnt]
 		    var objLine = new THREE.CSS3DObject(elementsLine._groups[0][cnt]);
-		    if(e.__data__["set"+currentSetIndex]){
-/*
-					objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
-			    objLine.rotation.set(el.__data__["arziguLine"+currentSetIndex].rotation.x, el.__data__["arziguLine"+currentSetIndex].rotation.y, el.__data__["arziguLine"+currentSetIndex].rotation.z);
-*/
-		    }
 		    scene.add(objLine);
 			}
 		  cnt++;
 		}
 		
-		
 		for (var i = 0; i<elementsSchool._groups[0].length; i++){
 			SetScoolPosition(elementsSchool._groups[0][i], i, curentSetPointCnt)
 			var es = elementsSchool._groups[0][i]
 			var objectScool = new THREE.CSS3DObject(es);
-/*
-			objectScool.position.set(es.__data__.arziguScool.position.x, es.__data__.arziguScool.position.y, es.__data__.arziguScool.position.z);
-	    objectScool.rotation.set(es.__data__.arziguScool.rotation.x, es.__data__.arziguScool.rotation.y, es.__data__.arziguScool.rotation.z);
-*/
 	    scene.add(objectScool);
+	    objectScool.position.set(elementsSchool._groups[0][i].__data__['arziguScool'].position.x, elementsSchool._groups[0][i].__data__['arziguScool'].position.y, elementsSchool._groups[0][i].__data__['arziguScool'].position.z)
+	    objectScool.rotation.set(elementsSchool._groups[0][i].__data__['arziguScool'].rotation.x, elementsSchool._groups[0][i].__data__['arziguScool'].rotation.y, elementsSchool._groups[0][i].__data__['arziguScool'].rotation.z)
 		}
 		
    	transform();
+   	
 /*
 		setTimeout(function(){
 			autoLoadData();
@@ -472,34 +457,20 @@ ThreeDD.main = function(){
 			var key;
 			switch(v.element.className){
 				case "point":
-				key = "arzigu"+currentSetIndex;
-				break;
+					key = "arzigu"+currentSetIndex;
+					break;
 				case "ziguline":
-				key = "arziguLine"+currentSetIndex;
-				break;
+					key = "arziguLine"+currentSetIndex;
+					break;
 				case "schoolNm":
-				key = "arziguScool";
-				break;
+					continue;
+					break;
 				default:
-				break;
+					break;
 			}
 			
 			newPos = v.element.__data__[key].position;
 			newRot = v.element.__data__[key].rotation;
-			
-			if(v.element.className == "schoolNm"){
-				// １週の中に描画するスタンプの個数
-				var countPerCircle = curentSetPointCnt > 50 ? curentSetPointCnt : 50;
-				//ズレを計算
-				var	phi = (curentSetPointCnt+.5) * (Math.PI * 2 / countPerCircle) + Math.PI * 1.1;
-				newPos.x = (distance * Math.cos(phi))*resolutionZoom;
-				newPos.z = (distance * Math.sin(phi))*resolutionZoom; 
-				var oldpos = Object.assign({}, v.position);
-				v.position.set(newPos.x, newPos.y, newPos.z);
-				v.lookAt(new THREE.Vector3(0,0,0));
-				newRot = v.rotation;
-				v.position.set(oldpos.x, oldpos.y, oldpos.z);
-			}
 			
 			var position = new TWEEN.Tween(v.position)
 			    .to({x: newPos.x, y: newPos.y, z: newPos.z}, Math.random() * duration + duration)
@@ -511,7 +482,6 @@ ThreeDD.main = function(){
 			    .easing(TWEEN.Easing.Exponential.InOut)
 			    .start();
 		}
-	
 		var update = new TWEEN.Tween(this)
 			.to({}, duration * 2)
 			.onUpdate(function(){
@@ -576,20 +546,19 @@ ThreeDD.main = function(){
 		document.getElementById("baboCommentDiv").style.width = window.innerWidth - baboWidth - 78 + "px";
 	}
 
-	function SetPosition(d, i, dataCnt) {
-		
-		// １週の中に描画するスタンプの個数
-		var countPerCircle = dataCnt > 50 ? dataCnt : 50;
+	function SetPosition(d, index) {
 		// 中心点からスタンプを話す距離
-		
-		var index = i;
-		var piOneStamp = Math.PI * 2 / countPerCircle;
-		
 		for(var i = 0; i<=currentSetIndex; i++){
+			// １週の中に描画するスタンプの個数
+			var dataCnt = rowData.pointLog[i].length;
+			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
+			var piOneStamp = Math.PI * 2 / countPerCircle;
+			var zure = -Math.PI/3 - piOneStamp * dataCnt;
+		
 			//螺旋_外向き
 			var arzigu = new THREE.Object3D();
 			//ズレを計算
-			var	phi = index * piOneStamp + Math.PI*1.1
+			var	phi = index * piOneStamp + zure;
 			arzigu.position.x = (distance * Math.cos(phi))*resolutionZoom;
 			arzigu.position.y = d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0;
 			arzigu.position.z = (distance * Math.sin(phi))*resolutionZoom; 
@@ -602,22 +571,18 @@ ThreeDD.main = function(){
 		d.__data__['element'] = d;
 	}
 	
-	function SetLinePosition(d, i, dataCnt) {
-		
-		// １週の中に描画するスタンプの個数
-		var countPerCircle = dataCnt > 50 ? dataCnt : 50;
-		// 中心点からスタンプを話す距離
-		var distance  = 560;
-		
-		var index = i;
-		var piOneStamp = Math.PI * 2 / countPerCircle;
-		
+	function SetLinePosition(d, index) {
 		for(var i = 0; i<=currentSetIndex; i++){
+			// １週の中に描画するスタンプの個数
+			var dataCnt = rowData.pointLog[i].length;
+			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
+			var piOneStamp = Math.PI * 2 / countPerCircle;
+			var zure = -Math.PI/3 - piOneStamp * dataCnt;
+			
 			//螺旋_外向き
 			var arziguLine = new THREE.Object3D();
-			
 			//ズレを計算
-			var	phi = (index+0.5) * piOneStamp + Math.PI * 1.1;
+			var	phi = (index+0.5) * piOneStamp + zure;
 			arziguLine.position.x = (distance * Math.cos(phi))*resolutionZoom * 1.02;
 			arziguLine.position.y = d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0;
 			arziguLine.position.z = (distance * Math.sin(phi))*resolutionZoom * 1.02; 
@@ -649,20 +614,11 @@ ThreeDD.main = function(){
 	
 	function SetScoolPosition(d, i, dataCnt) {
 		
-		// １週の中に描画するスタンプの個数
-		var countPerCircle = dataCnt > 50 ? dataCnt : 50;
-		// 中心点からスタンプを話す距離
-		var distance  = 560;
-		var piOneStamp = Math.PI * 2 / countPerCircle;
 		//螺旋_外向き
 		var arziguScool = new THREE.Object3D();
-		
-		//ズレを計算
-		var	phi = (dataCnt+.5) * piOneStamp + Math.PI*1.1;
-		arziguScool.position.x = (distance * Math.cos(phi))*resolutionZoom;
+		arziguScool.position.x = (distance * Math.cos(-Math.PI/3))*resolutionZoom;
 		arziguScool.position.y = i == 0 ? height*0.75 : -height*0.75;
-		arziguScool.position.z = (distance * Math.sin(phi))*resolutionZoom; 
-		
+		arziguScool.position.z = (distance * Math.sin(-Math.PI/3))*resolutionZoom; 
 		arziguScool.lookAt(new THREE.Vector3(0,0,0));
 		
 		d.__data__['arziguScool'] = arziguScool;
