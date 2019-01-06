@@ -55,7 +55,6 @@ ThreeDD.main = function(){
 
 	// 	データの作成
 	// 	データの作成
-/*
 	var rowData = {
 	  "matchId": "string",
 	  "setNo": 2,
@@ -88,7 +87,7 @@ ThreeDD.main = function(){
 	    ]
 	  ]
 	};
-*/
+/*
 	var rowData = {
 	  "matchId": "string",
 	  "setNo": 2,
@@ -303,6 +302,7 @@ ThreeDD.main = function(){
 	    ]
 	  ]
 	};
+*/
 	
 	var pointDatas = makePointData(rowData);
 	var currentSetIndex = rowData.pointLog.length-1;
@@ -389,8 +389,8 @@ ThreeDD.main = function(){
 				.style("border-radius", "96px")
 				.style("color", "rgba(255, 255, 255, 0.75)")
 				.style("text-alain", "center")
-				.style("background", "rgba(0, 0, 0, 0.75)")
-// 				.style("background", "red")
+// 				.style("background", "rgba(0, 0, 0, 0.75)")
+				.style("background", "red")
 				.style("background-attachment", "fixed")
 				.style("background-repeat", "no-repeat")
 				.style("line-height", "140px")
@@ -443,17 +443,20 @@ ThreeDD.main = function(){
 		}
 		
    	transform();
-   	
-	}
+	}	
 	
 	function autoLoadData(){
 		
 		//デモ用にカレンとセットにでーたを増やす
-		var r = Math.floor(Math.random());
+		var r = Math.round(Math.random());
 		var obj = {"team1":0, "team2":1};
 		if( r == 0 ) obj = {"team1":1, "team2":0};
 		var _rowData = Object.assign({}, rowData);
 		_rowData.pointLog[rowData.pointLog.length-1].push(obj);
+		
+		//増加得点データの抽出
+		var newPointData = makePointData(_rowData);
+		var newLinwData = newPointData.slice(1,newPointData.length);
 		
 		//セットが変更されたかの判定
 		if(rowData.pointLog.length != _rowData.pointLog.length){
@@ -461,10 +464,6 @@ ThreeDD.main = function(){
 		}else{
 			//表示しているデータ数を増やすかどうか判定
 			if(pointDatas.length < _rowData.pointLog[rowData.pointLog.length-1].length){
-				
-				//増加得点データの抽出
-				var newPointData = makePointData(_rowData);
-				var newLinwData = newPointData.slice(1,newPointData.length); 
 				
 				//エレメント数も増やす
 				var exit = elements.data(newPointData);
@@ -491,8 +490,8 @@ ThreeDD.main = function(){
 					.style("border-radius", "96px")
 					.style("color", "rgba(255, 255, 255, 0.75)")
 					.style("text-alain", "center")
-					.style("background", "rgba(0, 0, 0, 0.75)")
-// 					.style("background", "red")
+// 					.style("background", "rgba(0, 0, 0, 0.75)")
+					.style("background", "red")
 					.style("background-attachment", "fixed")
 					.style("background-repeat", "no-repeat")
 					.style("line-height", "140px")
@@ -511,8 +510,9 @@ ThreeDD.main = function(){
 					if(e){
 						SetPosition(e, cnt);	
 						if(cnt > pointDatas.length-1){
-							// オブzyr区との配置の良し悪しを判断する
+							// オブジェクトの配置の良し悪しを判断する
 							var object = new THREE.CSS3DObject(e);
+							object.position.set(0, 0, -500);
 					    scene.add(object);	
 						}
 					}
@@ -522,6 +522,7 @@ ThreeDD.main = function(){
 						SetLinePosition(el, cnt);	
 						if(cnt > pointDatas.length-2){
 							var objLine = new THREE.CSS3DObject(el);
+							objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
 					    scene.add(objLine);
 						}
 					}
@@ -536,8 +537,11 @@ ThreeDD.main = function(){
 				//位置の再計算を行う。
 			}
 		}
+		
+		rowData = _rowData;
+		pointDatas = newPointData;
 	}
-	//setTimeout(autoLoadData, 4000);
+	setInterval(autoLoadData, 8000);
 	
 	// 	
 	function changeSet(){
