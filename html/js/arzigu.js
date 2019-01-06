@@ -21,7 +21,8 @@ ThreeDD.main = function(){
 	/////////////////////////
 	var autoLoadMiliSecond = 3000;
 	var duration = 3000;
-	var distance  = 560;
+	var distance  = 960;
+	var yAxisBaseShift = -300;
 	/////////////////////////
 	//プライベート変数
 	/////////////////////////
@@ -54,6 +55,7 @@ ThreeDD.main = function(){
 
 	// 	データの作成
 	// 	データの作成
+/*
 	var rowData = {
 	  "matchId": "string",
 	  "setNo": 2,
@@ -86,7 +88,7 @@ ThreeDD.main = function(){
 	    ]
 	  ]
 	};
-/*
+*/
 	var rowData = {
 	  "matchId": "string",
 	  "setNo": 2,
@@ -301,7 +303,6 @@ ThreeDD.main = function(){
 	    ]
 	  ]
 	};
-*/
 	
 	var pointDatas = makePointData(rowData);
 	var currentSetIndex = rowData.pointLog.length-1;
@@ -388,8 +389,8 @@ ThreeDD.main = function(){
 				.style("border-radius", "96px")
 				.style("color", "rgba(255, 255, 255, 0.75)")
 				.style("text-alain", "center")
-// 				.style("background", "rgba(0, 0, 0, 0.75)")
-				.style("background", "red")
+				.style("background", "rgba(0, 0, 0, 0.75)")
+// 				.style("background", "red")
 				.style("background-attachment", "fixed")
 				.style("background-repeat", "no-repeat")
 				.style("line-height", "140px")
@@ -490,8 +491,8 @@ ThreeDD.main = function(){
 					.style("border-radius", "96px")
 					.style("color", "rgba(255, 255, 255, 0.75)")
 					.style("text-alain", "center")
-	// 				.style("background", "rgba(0, 0, 0, 0.75)")
-					.style("background", "red")
+					.style("background", "rgba(0, 0, 0, 0.75)")
+// 					.style("background", "red")
 					.style("background-attachment", "fixed")
 					.style("background-repeat", "no-repeat")
 					.style("line-height", "140px")
@@ -535,10 +536,8 @@ ThreeDD.main = function(){
 				//位置の再計算を行う。
 			}
 		}
-		
-		
 	}
-	setTimeout(autoLoadData, 4000);
+	//setTimeout(autoLoadData, 4000);
 	
 	// 	
 	function changeSet(){
@@ -681,7 +680,7 @@ ThreeDD.main = function(){
 			// １週の中に描画するスタンプの個数
 			var dataCnt = rowData.pointLog[i].length;
 			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
-			var piOneStamp = Math.PI * 2 / countPerCircle;
+			var piOneStamp = Math.PI * 2 / countPerCircle / 2;
 			var zure = -Math.PI/3 - piOneStamp * dataCnt;
 		
 			//螺旋_外向き
@@ -689,7 +688,7 @@ ThreeDD.main = function(){
 			//ズレを計算
 			var	phi = index * piOneStamp + zure;
 			arzigu.position.x = (distance * Math.cos(phi))*resolutionZoom;
-			arzigu.position.y = d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0;
+			arzigu.position.y = (d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0) + yAxisBaseShift;
 			arzigu.position.z = (distance * Math.sin(phi))*resolutionZoom; 
 			//回転を設定
 			arzigu.lookAt(new THREE.Vector3(0,0,0));
@@ -705,7 +704,7 @@ ThreeDD.main = function(){
 			// １週の中に描画するスタンプの個数
 			var dataCnt = rowData.pointLog[i].length;
 			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
-			var piOneStamp = Math.PI * 2 / countPerCircle;
+			var piOneStamp = Math.PI * 2 / countPerCircle / 2;
 			var zure = -Math.PI/3 - piOneStamp * dataCnt;
 			
 			//螺旋_外向き
@@ -713,7 +712,7 @@ ThreeDD.main = function(){
 			//ズレを計算
 			var	phi = (index+0.5) * piOneStamp + zure;
 			arziguLine.position.x = (distance * Math.cos(phi))*resolutionZoom * 1.02;
-			arziguLine.position.y = d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0;
+			arziguLine.position.y = (d.__data__["set"+i] ? (d.__data__["set"+i]["point"].team1==1 ? height*0.75 : -height*0.75) : 0) + yAxisBaseShift;
 			arziguLine.position.z = (distance * Math.sin(phi))*resolutionZoom * 1.02; 
 			
 			//得点パネルを包む角度を設定
@@ -746,7 +745,7 @@ ThreeDD.main = function(){
 		//螺旋_外向き
 		var arziguScool = new THREE.Object3D();
 		arziguScool.position.x = (distance * Math.cos(-Math.PI/3))*resolutionZoom;
-		arziguScool.position.y = i == 0 ? height*0.75 : -height*0.75;
+		arziguScool.position.y = (i == 0 ? height*0.75 : -height*0.75) + yAxisBaseShift;
 		arziguScool.position.z = (distance * Math.sin(-Math.PI/3))*resolutionZoom; 
 		arziguScool.lookAt(new THREE.Vector3(0,0,0));
 		
@@ -772,12 +771,18 @@ ThreeDD.main = function(){
 		//データ取得
 		var key = Math.floor(Math.random()*10);
 		var imageSrc = "html/image/babo/sticker_"+ key +".png";
-		var coms = ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-		 ,"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-		 ,"ccccccccccccccccccccccccccccccccccccccccccccccccccc"
-		 ,"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
-		 ,"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-		 ,"fff","ggg","hhh","iii","jjj"];
+		var coms = [
+		 "５０文字テスト：体調不良すいませんでした。不徳の致すところです。本当に本当に申し訳ありませんでした"
+		 ,"テスト"
+		 ,"５０文字テスト：体調不良すいませんでした。不徳の致すところです。本当に本当に申し訳ありませんでした"
+		 ,"テスト"
+		 ,"５０文字テスト：体調不良すいませんでした。不徳の致すところです。本当に本当に申し訳ありませんでした"
+		 ,"テスト"
+		 ,"５０文字テスト：体調不良すいませんでした。不徳の致すところです。本当に本当に申し訳ありませんでした"
+		 ,"テスト"
+		 ,"５０文字テスト：体調不良すいませんでした。不徳の致すところです。本当に本当に申し訳ありませんでした"
+		 ,"テスト"
+		 ];
 		
 		//データ更新
 		document.getElementById("baboImg").setAttribute("src", imageSrc);
@@ -793,7 +798,7 @@ ThreeDD.main = function(){
 			.duration(1000)
 			.delay(4000)
 			.style('opacity', 0)
-			.style('margin-bottom', "-220px")
+			.style('margin-bottom', "-180px")
 			.on('end', function(e) {
 				setTimeout(baboComment, 3000);
 			})
@@ -816,10 +821,17 @@ ThreeDD.main = function(){
 	//画面リサイズ
 	window.addEventListener('resize', WindowResize, false);
 	
-	// 	バボコメントエリアのサイズ指定
-	var baboWidth = document.getElementById("baboImg").width;
-	document.getElementById("baboCommentDiv").style.width = window.innerWidth - baboWidth - 78 + "px";
+	
 	//バボコメント表示
-	setTimeout(baboComment, 3000);
+	setTimeout(function(){
+		// 	バボコメントエリアのサイズ指定
+		var baboWidth = document.getElementById("baboImg").width;
+		document.getElementById("baboCommentDiv").style.width = window.innerWidth - baboWidth - 24 + "px";
+		
+		//バボちゃんコメント画像の余白設定
+		//document.getElementById("baboImg").style.marginTop = (document.getElementById("baboArea").clientHeight - document.getElementById("baboImg").clientHeight) / 2 + "px";
+		
+		baboComment();
+	}, 3000);
 }
 window.ThreeDD = ThreeDD;
