@@ -72,7 +72,8 @@ ThreeDD.main = function(){
 	//データをポーリングで読み込んで描画する
 	function autoLoadData(elm, data, classNm){
 		
-		data.stampList = Array(Math.floor(Math.random() * 47)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+// 		data.stampList = Array(Math.floor(Math.random() * 47)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+		data.stampList = Array(100).fill(0).map(m=>String(Math.floor(Math.random()*9)));
 		var stampData = makeStampData(data, classNm);
 		
 		console.log("ランダムデータ数："+stampData.length)
@@ -238,7 +239,7 @@ ThreeDD.main = function(){
 		// １週の中に描画するスタンプの個数
 		var countPerCircle = dataCnt < 36 ? dataCnt : 36;
 		// 中心点からスタンプを話す距離
-		var distance  = 560;
+		var distance  = 750;
 		
 		var index = i;
 		var piOneStamp = Math.PI * 2 / countPerCircle;
@@ -249,7 +250,7 @@ ThreeDD.main = function(){
 		//ズレを計算
 		var	phi = ((index) + 12) * piOneStamp + Math.PI/2
 		arale.position.x = (distance * Math.sin(phi))*resolutionZoom + (-120 + Math.random()*240);
-		arale.position.y = Math.floor(dataCnt/countPerCircle/2) * -120 + Math.floor(index/countPerCircle) * 240 + (-120 + Math.random()*240) - 480; 
+		arale.position.y = Math.floor(dataCnt/countPerCircle/2) * -120 + Math.floor(index/countPerCircle) * 240 + (-120 + Math.random()*240) - 480 + 250; 
 		arale.position.z = (distance * Math.cos(phi))*resolutionZoom + (-60 + Math.random()*120); 
 		vector.x = arale.position.x * 2 *resolutionZoom;
 		vector.y = arale.position.y *resolutionZoom;
