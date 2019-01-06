@@ -20,7 +20,7 @@ ThreeDD.main = function(){
 	//ユーザ定義変数
 	/////////////////////////
 	var autoLoadMiliSecond = 4000;
-	
+	var yAxisBaseShift = 250;
 	/////////////////////////
 	//プライベート変数
 	/////////////////////////
@@ -250,7 +250,7 @@ ThreeDD.main = function(){
 		//ズレを計算
 		var	phi = ((index) + 12) * piOneStamp + Math.PI/2
 		arale.position.x = (distance * Math.sin(phi))*resolutionZoom + (-120 + Math.random()*240);
-		arale.position.y = Math.floor(dataCnt/countPerCircle/2) * -120 + Math.floor(index/countPerCircle) * 240 + (-120 + Math.random()*240) - 480 + 250; 
+		arale.position.y = Math.floor(dataCnt/countPerCircle/2) * -120 + Math.floor(index/countPerCircle) * 240 + (-120 + Math.random()*240) - 480 + yAxisBaseShift; 
 		arale.position.z = (distance * Math.cos(phi))*resolutionZoom + (-60 + Math.random()*120); 
 		vector.x = arale.position.x * 2 *resolutionZoom;
 		vector.y = arale.position.y *resolutionZoom;
