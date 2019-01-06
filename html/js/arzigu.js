@@ -36,6 +36,7 @@ ThreeDD.main = function(){
 	var controls, gcontrols;
 	var resolutionZoom = 2.5; //解像度
 	var curentSetPointCnt = 0;
+	var autoLoadDataTimer;
 	//得点サイズ定義
   var sizeBase = 56;
   var width  = sizeBase * resolutionZoom, height = sizeBase * resolutionZoom;
@@ -83,8 +84,43 @@ ThreeDD.main = function(){
 				{"team1":0,"team2":1},
 				{"team1":0,"team2":1},
 				{"team1":0,"team2":1},
-				{"team1":1,"team2":0}
-	    ]
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+	    ],[
+	      {"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+			],
 	  ]
 	};
 /*
@@ -421,6 +457,7 @@ ThreeDD.main = function(){
 				SetPosition(e, cnt);	
 				//初期配置
 				var object = new THREE.CSS3DObject(e);
+				object.name = "point"+cnt;
 		    scene.add(object);
 			}
 			
@@ -446,7 +483,7 @@ ThreeDD.main = function(){
 	}	
 	
 	function autoLoadData(){
-		
+	
 		//デモ用にカレンとセットにでーたを増やす
 		var r = Math.round(Math.random());
 		var obj = {"team1":0, "team2":1};
@@ -535,16 +572,74 @@ ThreeDD.main = function(){
 				
 				//エレメントのデータを更新するだけ
 				//位置の再計算を行う。
+				//エレメント数も増やす
+				
+				var exit = elements.data(newPointData);
+				elements = exit.enter().append('div').merge(exit);
+				
+				var exitLine = elementsLine.data(newLinwData);
+				elementsLine = exitLine.enter().append('hr').merge(exitLine);
+				
+				//ScenObjectも増やす
+				//位置も再計算する
+				
+				elements
+					.text(function(e, i){
+			    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
+			    })
+	        .attr('class', 'point')
+	        .attr('id', function(e, i){
+	        	return "divPanel" + i;
+	        })
+	        .style("opacity", function(e, i){
+	        	return e["set"+currentSetIndex] ? "1" : "0";
+	        })
+	        .style("width", width + "px")
+	        .style("height", height + "px")
+	        .style("font-size", "72px")
+					.style("border-radius", "96px")
+					.style("color", "rgba(255, 255, 255, 0.75)")
+					.style("text-alain", "center")
+// 					.style("background", "rgba(0, 0, 0, 0.75)")
+					.style("background", "red")
+					.style("background-attachment", "fixed")
+					.style("background-repeat", "no-repeat")
+					.style("line-height", "140px")
+					.style("text-align", "center");
+						
+				//グラフ描画用のDIV生成
+		    elementsLine
+	        .attr('class', 'ziguline')
+	        .attr('width','200')
+	        .attr('color','#ffffff')
+	        .style("opacity", function(e, i){
+	        	return e["set"+currentSetIndex] ? "1" : "0";
+	        });
+	     
+				//座標を設定して配置する
+				for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
+					var e = elements._groups[0][cnt];
+					if(e){
+						SetPosition(e, cnt);	
+						if(cnt == curentSetPointCnt-1){
+							scene.getChildByName("point"+cnt).position.set(0,0,-500);
+						}
+					}
+					if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
+						var el = elementsLine._groups[0][cnt]
+						SetLinePosition(el, cnt);	
+					}
+				}
+		   	transform();
 			}
 		}
-		
 		rowData = _rowData;
 		pointDatas = newPointData;
 	}
-	setInterval(autoLoadData, 8000);
+	autoLoadDataTimer = setInterval(autoLoadData, 8000);
 	
-	// 	
 	function changeSet(){
+		
 		//セット数の文言更新
 		document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
 		curentSetPointCnt = rowData.pointLog[currentSetIndex].length;
