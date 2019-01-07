@@ -120,6 +120,47 @@ ThreeDD.main = function(){
 				{"team1":0,"team2":1},
 				{"team1":1,"team2":0},
 				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0},
+				{"team1":0,"team2":1},
+				{"team1":1,"team2":0}
 			],
 	  ]
 	};
@@ -450,7 +491,6 @@ ThreeDD.main = function(){
      
 		//座標を設定して配置する
 		var cnt = 0;
-		
 		for (let e of elements._groups[0]) {
 
 			if(e){
@@ -488,8 +528,15 @@ ThreeDD.main = function(){
 		var r = Math.round(Math.random());
 		var obj = {"team1":0, "team2":1};
 		if( r == 0 ) obj = {"team1":1, "team2":0};
-		var _rowData = Object.assign({}, rowData);
-		_rowData.pointLog[rowData.pointLog.length-1].push(obj);
+		var _rowData = JSON.parse(JSON.stringify(rowData));
+		//現在セットに加点
+		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);		
+		//現在セットに加点
+/*
+		_rowData.pointLog[_rowData.pointLog.length] = [];
+		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);
+*/
+
 		
 		//増加得点データの抽出
 		var newPointData = makePointData(_rowData);
@@ -497,7 +544,7 @@ ThreeDD.main = function(){
 		
 		//セットが変更されたかの判定
 		if(rowData.pointLog.length != _rowData.pointLog.length){
-			//anythin done・・・
+			setChangeNext();
 		}else{
 			
 			//エレメント数も増やす
@@ -541,7 +588,11 @@ ThreeDD.main = function(){
         .style("opacity", function(e, i){
         	return e["set"+currentSetIndex] ? "1" : "0";
         });
-     
+			
+			//こっきょせつめい(とちゅうでこける)
+     	rowData = _rowData;
+		 	pointDatas = newPointData;
+		
 			//座標を設定して配置する
 			for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
 				var e = elements._groups[0][cnt];
@@ -551,6 +602,7 @@ ThreeDD.main = function(){
 						// オブジェクトの配置の良し悪しを判断する
 						var object = new THREE.CSS3DObject(e);
 						object.position.set(0, 0, -500);
+						object.name = "point"+cnt;
 				    scene.add(object);	
 					}
 					if(cnt == curentSetPointCnt-1){
@@ -571,8 +623,6 @@ ThreeDD.main = function(){
 			
 	   	transform();
 		}
-		rowData = _rowData;
-		pointDatas = newPointData;
 	}
 	autoLoadDataTimer = setInterval(autoLoadData, 8000);
 	

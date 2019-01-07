@@ -72,8 +72,8 @@ ThreeDD.main = function(){
 	//データをポーリングで読み込んで描画する
 	function autoLoadData(elm, data, classNm){
 		
-// 		data.stampList = Array(Math.floor(Math.random() * 47)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
-		data.stampList = Array(100).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+		data.stampList = Array(Math.floor(Math.random() * 47)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+// 		data.stampList = Array(100).fill(0).map(m=>String(Math.floor(Math.random()*9)));
 		var stampData = makeStampData(data, classNm);
 		
 		console.log("ランダムデータ数："+stampData.length)
@@ -215,15 +215,24 @@ ThreeDD.main = function(){
 			ne = scene.children.filter(f=>f.element.classList[0] == "elementNew");
 			for (let i = 0; i < ne.length; i++) {
 				var newPosition = new THREE.Object3D();
-
-				newPosition.position.set(ne[i].position.x, ne[i].position.y-15, ne[i].position.z-60);
+				if(gcontrols){
+					newPosition.position.set(
+						ne[i].position.x + 50*Math.cos(camera.rotation.x)*Math.cos(camera.rotation.y+Math.PI/2),
+						ne[i].position.y + 50*Math.sin(camera.rotation.x),
+						ne[i].position.z - 50*Math.cos(camera.rotation.x)*Math.sin(camera.rotation.y+Math.PI/2)
+					);	
+				}else{
+					newPosition.position.set(
+						ne[i].position.x - 50*Math.sin(controls.getPolarAngle())*Math.sin(controls.getAzimuthalAngle()),
+						ne[i].position.y - 50*Math.cos(controls.getPolarAngle()),
+						ne[i].position.z - 50*Math.sin(controls.getPolarAngle())*Math.cos(controls.getAzimuthalAngle())
+					);	
+				}
 				newPosition.lookAt(camera.position);
-				
 				ne[i].position.set(newPosition.position.x, newPosition.position.y, newPosition.position.z);
 				ne[i].rotation.set(newPosition.rotation.x, newPosition.rotation.y, newPosition.rotation.z);	
 			}
 		}
-		
 		TWEEN.update();
 		renderer.render( scene, camera );
 	}
@@ -304,6 +313,7 @@ ThreeDD.main = function(){
 			.delay(100)
 			.style('opacity', '0')
 			.on('end', function(e) { 
+				scene.remove(scene.children.filter(f=>f.element.className=="elementNew")[0])
 				this.remove();
 				myStamps.splice(0, 1);
 				if(myStamps.length == 0){
