@@ -24,7 +24,6 @@ ThreeDD.main = function(){
 	/////////////////////////
 	//プライベート変数
 	/////////////////////////
-	var container = d3.select("#container");
 	var elementsFst, elementsSnd, newElements;
 	var theta = 0;
 	var camera;
@@ -99,14 +98,14 @@ ThreeDD.main = function(){
 				var elmEnter = enter.enter().append("div");
 				elm = elmEnter.merge(enter);	
 			}else{
-				container.selectAll("."+classNm).data(stampData).exit().remove();
+				d3.select("#container").selectAll("."+classNm).data(stampData).exit().remove();
 				//描画するエレメントが少なくなる場合は対象のDivを削除する。
-				elm = container.selectAll("."+classNm).data(stampData).enter().append('div');
+				elm = d3.select("#container").selectAll("."+classNm).data(stampData).enter().append('div');
 			}
 	    console.log("d３データ数："+elm._groups[0].length)
 		}else{
 			//初回描画
-			elm = container.selectAll("."+classNm).data(stampData).enter().append('div');
+			elm = d3.select("#container").selectAll("."+classNm).data(stampData).enter().append('div');
 		}
 		
 		elm.style('background',function(e, i){
@@ -296,9 +295,10 @@ ThreeDD.main = function(){
 	  myStamps.push(newData);
 
 	  //グラフ描画用のDIV生成
-    newElements = container.select('.elementNew')
+    newElements = d3.select("#container").selectAll('.elementNew')
 	    .data(myStamps).enter()
 	    .append('div');
+	    
 	  newElements.attr('class', 'elementNew')
 	    .style("width", width + "px")
 	    .style("height", height + "px",)
