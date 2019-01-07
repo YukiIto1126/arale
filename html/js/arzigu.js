@@ -55,7 +55,7 @@ ThreeDD.main = function(){
 	}	
 
 	// 	データの作成
-	// 	データの作成
+/*
 	var rowData = {
 	  "matchId": "string",
 	  "setNo": 2,
@@ -164,7 +164,8 @@ ThreeDD.main = function(){
 			],
 	  ]
 	};
-/*
+*/
+
 	var rowData = {
 	  "matchId": "string",
 	  "setNo": 2,
@@ -361,25 +362,10 @@ ThreeDD.main = function(){
 				{"team1":0,"team2":1},
 	    ],[
 	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0},
-	      {"team1":0,"team2":1},
-	      {"team1":1,"team2":0},
-	      {"team1":1,"team2":0}
 	    ]
 	  ]
 	};
-*/
+
 	
 	var pointDatas = makePointData(rowData);
 	var currentSetIndex = rowData.pointLog.length-1;
@@ -548,7 +534,6 @@ ThreeDD.main = function(){
 			currentSetIndex = _rowData.pointLog.length-1;
 			document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
 			curentSetPointCnt = rowData.pointLog[currentSetIndex].length;
-		
 		}
 			
 		//エレメント数も増やす
@@ -597,7 +582,7 @@ ThreeDD.main = function(){
 				SetPosition(e, cnt, true);
 				
 				//セット変更されない場合
-				if(rowData.pointLog.length == _rowData.pointLog.length){
+				if(rowData.pointLog.length == _rowData.pointLog.length && currentSetIndex == _rowData.pointLog.length-1){
 					if(cnt > pointDatas.length-1){
 						// オブジェクトの配置の良し悪しを判断する
 						var object = new THREE.CSS3DObject(e);
@@ -612,7 +597,7 @@ ThreeDD.main = function(){
 			if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
 				var el = elementsLine._groups[0][cnt]
 				SetLinePosition(el, cnt, true);	
-				if(cnt > pointDatas.length-2){
+				if(cnt > pointDatas.length-2 && currentSetIndex == _rowData.pointLog.length-1){
 					var objLine = new THREE.CSS3DObject(el);
 					objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
 			    scene.add(objLine);
