@@ -759,7 +759,7 @@ ThreeDD.main = function(){
 
 	function SetPosition(d, index, isLoad=false) {
 		// 中心点からスタンプを話す距離
-		for(var i = 0; i<=currentSetIndex; i++){
+		for(var i = 0; i<rowData.pointLog.length; i++){
 			// １週の中に描画するスタンプの個数
 			var dataCnt = rowData.pointLog[i].length + (isLoad?1:0);
 			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
@@ -783,7 +783,7 @@ ThreeDD.main = function(){
 	}
 	
 	function SetLinePosition(d, index, isLoad=false) {
-		for(var i = 0; i<=currentSetIndex; i++){
+		for(var i = 0; i<rowData.pointLog.length; i++){
 			// １週の中に描画するスタンプの個数
 			var dataCnt = rowData.pointLog[i].length + (isLoad?1:0);
 			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
