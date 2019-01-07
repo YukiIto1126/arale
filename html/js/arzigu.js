@@ -531,12 +531,11 @@ ThreeDD.main = function(){
 		var _rowData = JSON.parse(JSON.stringify(rowData));
 		//現在セットに加点
 		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);		
-		//現在セットに加点
+		//新セットに加点
 /*
 		_rowData.pointLog[_rowData.pointLog.length] = [];
 		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);
 */
-
 		
 		//増加得点データの抽出
 		var newPointData = makePointData(_rowData);
@@ -588,20 +587,15 @@ ThreeDD.main = function(){
         .style("opacity", function(e, i){
         	return e["set"+currentSetIndex] ? "1" : "0";
         });
-			
-			//こっきょせつめい(とちゅうでこける)
-     	rowData = _rowData;
-		 	pointDatas = newPointData;
-		
+        
 			//座標を設定して配置する
 			for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
 				var e = elements._groups[0][cnt];
 				if(e){
-					SetPosition(e, cnt);	
+					SetPosition(e, cnt, true);	
 					if(cnt > pointDatas.length-1){
 						// オブジェクトの配置の良し悪しを判断する
 						var object = new THREE.CSS3DObject(e);
-						object.position.set(0, 0, -500);
 						object.name = "point"+cnt;
 				    scene.add(object);	
 					}
@@ -612,7 +606,7 @@ ThreeDD.main = function(){
 				
 				if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
 					var el = elementsLine._groups[0][cnt]
-					SetLinePosition(el, cnt);	
+					SetLinePosition(el, cnt, true);	
 					if(cnt > pointDatas.length-2){
 						var objLine = new THREE.CSS3DObject(el);
 						objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
@@ -620,9 +614,11 @@ ThreeDD.main = function(){
 					}
 				}
 			}
-			
-	   	transform();
+			transform();
 		}
+	  rowData = _rowData;
+	  pointDatas = newPointData;
+
 	}
 	autoLoadDataTimer = setInterval(autoLoadData, 8000);
 	
@@ -761,11 +757,11 @@ ThreeDD.main = function(){
 		document.getElementById("baboCommentDiv").style.width = window.innerWidth - baboWidth - 78 + "px";
 	}
 
-	function SetPosition(d, index) {
+	function SetPosition(d, index, isLoad=false) {
 		// 中心点からスタンプを話す距離
 		for(var i = 0; i<=currentSetIndex; i++){
 			// １週の中に描画するスタンプの個数
-			var dataCnt = rowData.pointLog[i].length;
+			var dataCnt = rowData.pointLog[i].length + (isLoad?1:0);
 			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
 			var piOneStamp = Math.PI * 2 / countPerCircle / 2;
 			var zure = -Math.PI/3 - piOneStamp * dataCnt;
@@ -786,10 +782,10 @@ ThreeDD.main = function(){
 		d.__data__['element'] = d;
 	}
 	
-	function SetLinePosition(d, index) {
+	function SetLinePosition(d, index, isLoad=false) {
 		for(var i = 0; i<=currentSetIndex; i++){
 			// １週の中に描画するスタンプの個数
-			var dataCnt = rowData.pointLog[i].length;
+			var dataCnt = rowData.pointLog[i].length + (isLoad?1:0);
 			var countPerCircle = dataCnt > 48 ? dataCnt+2 : 50;
 			var piOneStamp = Math.PI * 2 / countPerCircle / 2;
 			var zure = -Math.PI/3 - piOneStamp * dataCnt;
