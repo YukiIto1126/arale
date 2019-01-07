@@ -530,12 +530,10 @@ ThreeDD.main = function(){
 		if( r == 0 ) obj = {"team1":1, "team2":0};
 		var _rowData = JSON.parse(JSON.stringify(rowData));
 		//現在セットに加点
-		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);		
+// 		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);		
 		//新セットに加点
-/*
 		_rowData.pointLog[_rowData.pointLog.length] = [];
 		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);
-*/
 		
 		//増加得点データの抽出
 		var newPointData = makePointData(_rowData);
@@ -543,7 +541,66 @@ ThreeDD.main = function(){
 		
 		//セットが変更されたかの判定
 		if(rowData.pointLog.length != _rowData.pointLog.length){
-			setChangeNext();
+			
+			rowData = _rowData;
+			pointDatas = newPointData;
+			
+			currentSetIndex = _rowData.pointLog.length-1;
+			
+			//エレメント数も増やす
+			var exit = elements.data(newPointData);
+			elements = exit.enter().append('div').merge(exit);
+			
+			var exitLine = elementsLine.data(newLinwData);
+			elementsLine = exitLine.enter().append('hr').merge(exitLine);
+			
+			elements
+				.text(function(e, i){
+		    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
+		    })
+        .attr('class', 'point')
+        .attr('id', function(e, i){
+        	return "divPanel" + i;
+        })
+        .style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+        })	        .style("width", width + "px")
+        .style("height", height + "px")
+        .style("font-size", "72px")
+				.style("border-radius", "96px")
+				.style("color", "rgba(255, 255, 255, 0.75)")
+				.style("text-alain", "center")
+// 					.style("background", "rgba(0, 0, 0, 0.75)")
+				.style("background", "red")
+				.style("background-attachment", "fixed")
+				.style("background-repeat", "no-repeat")
+				.style("line-height", "140px")
+				.style("text-align", "center");
+					
+			//グラフ描画用のDIV生成
+	    elementsLine
+        .attr('class', 'ziguline')
+        .attr('width','200')
+        .attr('color','#ffffff')
+        .style("opacity", function(e, i){
+        	return e["set"+currentSetIndex] ? "1" : "0";
+        });
+        
+			//座標を設定して配置する
+			for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
+				var e = elements._groups[0][cnt];
+				if(e){
+					SetPosition(e, cnt, true);	
+				}
+				
+				if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
+					var el = elementsLine._groups[0][cnt]
+					SetLinePosition(el, cnt, true);	
+				}
+			}
+			
+			changeSet();
+			
 		}else{
 			
 			//エレメント数も増やす
@@ -615,10 +672,10 @@ ThreeDD.main = function(){
 				}
 			}
 			transform();
+			
+			rowData = _rowData;
+			pointDatas = newPointData;
 		}
-	  rowData = _rowData;
-	  pointDatas = newPointData;
-
 	}
 	autoLoadDataTimer = setInterval(autoLoadData, 8000);
 	
