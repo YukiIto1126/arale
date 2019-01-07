@@ -530,10 +530,12 @@ ThreeDD.main = function(){
 		if( r == 0 ) obj = {"team1":1, "team2":0};
 		var _rowData = JSON.parse(JSON.stringify(rowData));
 		//現在セットに加点
-// 		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);		
+		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);		
 		//新セットに加点
+/*
 		_rowData.pointLog[_rowData.pointLog.length] = [];
 		_rowData.pointLog[_rowData.pointLog.length-1].push(obj);
+*/
 		
 		//増加得点データの抽出
 		var newPointData = makePointData(_rowData);
@@ -541,115 +543,61 @@ ThreeDD.main = function(){
 		
 		//セットが変更されたかの判定
 		if(rowData.pointLog.length != _rowData.pointLog.length){
-			
 			rowData = _rowData;
 			pointDatas = newPointData;
-			
 			currentSetIndex = _rowData.pointLog.length-1;
+			document.getElementById("setValue").textContent = (currentSetIndex+1) + "set";
+			curentSetPointCnt = rowData.pointLog[currentSetIndex].length;
+		
+		}
 			
-			//エレメント数も増やす
-			var exit = elements.data(newPointData);
-			elements = exit.enter().append('div').merge(exit);
-			
-			var exitLine = elementsLine.data(newLinwData);
-			elementsLine = exitLine.enter().append('hr').merge(exitLine);
-			
-			elements
-				.text(function(e, i){
-		    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
-		    })
-        .attr('class', 'point')
-        .attr('id', function(e, i){
-        	return "divPanel" + i;
-        })
-        .style("opacity", function(e, i){
-        	return e["set"+currentSetIndex] ? "1" : "0";
-        })	        .style("width", width + "px")
-        .style("height", height + "px")
-        .style("font-size", "72px")
-				.style("border-radius", "96px")
-				.style("color", "rgba(255, 255, 255, 0.75)")
-				.style("text-alain", "center")
+		//エレメント数も増やす
+		var exit = elements.data(newPointData);
+		elements = exit.enter().append('div').merge(exit);
+		
+		var exitLine = elementsLine.data(newLinwData);
+		elementsLine = exitLine.enter().append('hr').merge(exitLine);
+		
+		elements
+			.text(function(e, i){
+	    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
+	    })
+      .attr('class', 'point')
+      .attr('id', function(e, i){
+      	return "divPanel" + i;
+      })
+      .style("opacity", function(e, i){
+      	return e["set"+currentSetIndex] ? "1" : "0";
+      })	        .style("width", width + "px")
+      .style("height", height + "px")
+      .style("font-size", "72px")
+			.style("border-radius", "96px")
+			.style("color", "rgba(255, 255, 255, 0.75)")
+			.style("text-alain", "center")
 // 					.style("background", "rgba(0, 0, 0, 0.75)")
-				.style("background", "red")
-				.style("background-attachment", "fixed")
-				.style("background-repeat", "no-repeat")
-				.style("line-height", "140px")
-				.style("text-align", "center");
-					
-			//グラフ描画用のDIV生成
-	    elementsLine
-        .attr('class', 'ziguline')
-        .attr('width','200')
-        .attr('color','#ffffff')
-        .style("opacity", function(e, i){
-        	return e["set"+currentSetIndex] ? "1" : "0";
-        });
-        
-			//座標を設定して配置する
-			for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
-				var e = elements._groups[0][cnt];
-				if(e){
-					SetPosition(e, cnt, true);	
-				}
+			.style("background", "red")
+			.style("background-attachment", "fixed")
+			.style("background-repeat", "no-repeat")
+			.style("line-height", "140px")
+			.style("text-align", "center");
 				
-				if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
-					var el = elementsLine._groups[0][cnt]
-					SetLinePosition(el, cnt, true);	
-				}
-			}
-			
-			changeSet();
-			
-		}else{
-			
-			//エレメント数も増やす
-			var exit = elements.data(newPointData);
-			elements = exit.enter().append('div').merge(exit);
-			
-			var exitLine = elementsLine.data(newLinwData);
-			elementsLine = exitLine.enter().append('hr').merge(exitLine);
-			
-			//ScenObjectも増やす
-			//位置も再計算する
-			
-			elements
-				.text(function(e, i){
-		    	return e["set"+currentSetIndex] ? e["set"+currentSetIndex]["sum"] : "";
-		    })
-        .attr('class', 'point')
-        .attr('id', function(e, i){
-        	return "divPanel" + i;
-        })
-        .style("opacity", function(e, i){
-        	return e["set"+currentSetIndex] ? "1" : "0";
-        })	        .style("width", width + "px")
-        .style("height", height + "px")
-        .style("font-size", "72px")
-				.style("border-radius", "96px")
-				.style("color", "rgba(255, 255, 255, 0.75)")
-				.style("text-alain", "center")
-// 					.style("background", "rgba(0, 0, 0, 0.75)")
-				.style("background", "red")
-				.style("background-attachment", "fixed")
-				.style("background-repeat", "no-repeat")
-				.style("line-height", "140px")
-				.style("text-align", "center");
-					
-			//グラフ描画用のDIV生成
-	    elementsLine
-        .attr('class', 'ziguline')
-        .attr('width','200')
-        .attr('color','#ffffff')
-        .style("opacity", function(e, i){
-        	return e["set"+currentSetIndex] ? "1" : "0";
-        });
-        
-			//座標を設定して配置する
-			for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
-				var e = elements._groups[0][cnt];
-				if(e){
-					SetPosition(e, cnt, true);	
+		//グラフ描画用のDIV生成
+    elementsLine
+      .attr('class', 'ziguline')
+      .attr('width','200')
+      .attr('color','#ffffff')
+      .style("opacity", function(e, i){
+      	return e["set"+currentSetIndex] ? "1" : "0";
+      });
+      
+		//座標を設定して配置する
+		for (var cnt = 0; cnt < elements._groups[0].length; cnt++) {
+			var e = elements._groups[0][cnt];
+			if(e){
+				SetPosition(e, cnt, true);
+				
+				//セット変更されない場合
+				if(rowData.pointLog.length == _rowData.pointLog.length){
 					if(cnt > pointDatas.length-1){
 						// オブジェクトの配置の良し悪しを判断する
 						var object = new THREE.CSS3DObject(e);
@@ -660,22 +608,22 @@ ThreeDD.main = function(){
 						scene.getChildByName("point"+cnt).position.set(0,0,-500);
 					}
 				}
-				
-				if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
-					var el = elementsLine._groups[0][cnt]
-					SetLinePosition(el, cnt, true);	
-					if(cnt > pointDatas.length-2){
-						var objLine = new THREE.CSS3DObject(el);
-						objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
-				    scene.add(objLine);
-					}
+			}
+			if(elementsLine._groups[0].length > cnt && elementsLine._groups[0][cnt]){
+				var el = elementsLine._groups[0][cnt]
+				SetLinePosition(el, cnt, true);	
+				if(cnt > pointDatas.length-2){
+					var objLine = new THREE.CSS3DObject(el);
+					objLine.position.set(el.__data__["arziguLine"+currentSetIndex].position.x, el.__data__["arziguLine"+currentSetIndex].position.y, el.__data__["arziguLine"+currentSetIndex].position.z);
+			    scene.add(objLine);
 				}
 			}
-			transform();
-			
-			rowData = _rowData;
-			pointDatas = newPointData;
 		}
+		
+		transform();
+		
+		rowData = _rowData;
+		pointDatas = newPointData;
 	}
 	autoLoadDataTimer = setInterval(autoLoadData, 8000);
 	
