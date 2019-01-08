@@ -71,28 +71,11 @@ ThreeDD.main = function(){
 	//データをポーリングで読み込んで描画する
 	function autoLoadData(elm, data, classNm){
 		
-		data.stampList = Array(Math.floor(Math.random() * 47)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
-// 		data.stampList = Array(100).fill(0).map(m=>String(Math.floor(Math.random()*9)));
+		data.stampList = Array(Math.floor(Math.random() * 100)+1).fill(0).map(m=>String(Math.floor(Math.random()*9)));
 		var stampData = makeStampData(data, classNm);
 		
 		console.log("ランダムデータ数："+stampData.length)
 		if(elm){
-			
-			var eles = document.getElementsByClassName(classNm);
-			console.log("削除対象前："+ eles.length);
-			for(var i=0; i<eles.length; i++){
-					eles[i].remove();
-				}
-
-			while(document.getElementsByClassName(classNm).length>0){
-				var a = document.getElementsByClassName(classNm);			
-				for(var i=0; i<a.length; i++){
-					a[i].remove();
-				}
-			}
-			
-			console.log("削除対象後："+ document.getElementsByClassName(classNm).length);
-			
 			if(elm._groups[0].length <= stampData.length){
 				var enter = elm.data(stampData);
 				var elmEnter = enter.enter().append("div");
@@ -102,7 +85,6 @@ ThreeDD.main = function(){
 				//描画するエレメントが少なくなる場合は対象のDivを削除する。
 				elm = d3.select("#container").selectAll("."+classNm).data(stampData).enter().append('div');
 			}
-	    console.log("d３データ数："+elm._groups[0].length)
 		}else{
 			//初回描画
 			elm = d3.select("#container").selectAll("."+classNm).data(stampData).enter().append('div');
@@ -111,7 +93,9 @@ ThreeDD.main = function(){
 		elm.style('background',function(e, i){
 				return 'url(' + baboImgs[e.imageId].src + ')';
 			})
-			.attr('class',classNm)
+			.attr('class',function(e,i){
+				return classNm + i;
+			})
 			.attr('border','0')
 			.style("width",width + "px")
 			.style("height", height + "px")
@@ -134,7 +118,10 @@ ThreeDD.main = function(){
 				return autoLoadMiliSecond - 1000 + e.time;
 			})
 			.style('opacity',0)
-			.style('padding-top', '0px');
+			.style('padding-top', '0px')
+			.on('end', function(e,i) { 
+				scene.remove(scene.getChildByName(e.element.className));
+			})
 					
 		//座標を設定して配置する
 		var cnt = 0;
@@ -145,13 +132,13 @@ ThreeDD.main = function(){
 			
 			//初期配置
 			var object = new THREE.CSS3DObject(e);
+			object.name = e.className;
 			object.position.set(e['__data__'].arale.position.x, e['__data__'].arale.position.y, e['__data__'].arale.position.z);
 	    object.rotation.set(e['__data__'].arale.rotation.x, e['__data__'].arale.rotation.y, e['__data__'].arale.rotation.z);
 	    scene.add(object);
 		}
 		
-		removeEmptyDiv();
-		
+		//再読み込み処理
 		setTimeout(function(){
 			autoLoadData(elm, data, classNm);
 		}, autoLoadMiliSecond * 2.5);
