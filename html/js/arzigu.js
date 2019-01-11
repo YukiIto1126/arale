@@ -864,16 +864,18 @@ ThreeDD.main = function(){
 		//バボちゃん表示処理
 		d3.select("#baboArea")
 			.transition()
-			.duration(1000)
+			.duration(2000)
 			.style('opacity', 1)
 			.style('margin-bottom', "0px")
+			.style('transform', 'scale3d(1,1,1)')
 			.transition()
-			.duration(1000)
-			.delay(4000)
+			.duration(2000)
+			.delay(6000)
 			.style('opacity', 0)
-			.style('margin-bottom', "-180px")
+			.style('margin-bottom', "-90px")
+			.style('transform', 'scale3d(0.25,0.25,1)')
 			.on('end', function(e) {
-				setTimeout(baboComment, 3000);
+				setTimeout(baboComment, 8000);
 			})
 	}
 
